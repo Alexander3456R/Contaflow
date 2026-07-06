@@ -60,7 +60,7 @@
             <a href="{{ route('reportes', ['range' => '90d']) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === '90d' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">90D</a>
             <a href="{{ route('reportes', ['range' => '1y']) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === '1y' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">1A</a>
             <a href="{{ route('reportes', ['range' => 'all']) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === 'all' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">Todo</a>
-            <button onclick="document.getElementById('repCustomRange').classList.toggle('hidden')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === 'custom' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">
+            <button id="repCustomBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === 'custom' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">
               <span class="material-symbols-outlined text-[14px]">calendar_month</span>
             </button>
           </div>
@@ -155,16 +155,13 @@
               <circle cx="{{ $c['x'] }}" cy="{{ $c['yIncome'] }}" fill="#004ac6" r="4" stroke="white" stroke-width="2"
                       data-index="{{ $i }}" data-date="{{ $c['date'] }}" data-income="{{ $c['income'] }}"
                       data-expenses="{{ $c['expenses'] }}" data-net="{{ $c['net'] }}"
-                      class="rep-point cursor-pointer"
-                      onmouseenter="highlightRepPoint({{ $i }}, true)" onmouseleave="highlightRepPoint({{ $i }}, false)"/>
+                      class="rep-point cursor-pointer"/>
               <circle cx="{{ $c['x'] }}" cy="{{ $c['yExpense'] }}" fill="#ba1a1a" r="4" stroke="white" stroke-width="2"
                       data-index="{{ $i }}" data-date="{{ $c['date'] }}" data-income="{{ $c['income'] }}"
                       data-expenses="{{ $c['expenses'] }}" data-net="{{ $c['net'] }}"
-                      class="rep-point cursor-pointer"
-                      onmouseenter="highlightRepPoint({{ $i }}, true)" onmouseleave="highlightRepPoint({{ $i }}, false)"/>
+                      class="rep-point cursor-pointer"/>
             @endforeach
-            <rect x="{{ $pad }}" y="0" width="{{ $plotW }}" height="{{ $cH }}" fill="transparent"
-                  onmousemove="trackRepMove(event)" onmouseleave="hideRepTooltip()"/>
+            <rect id="repTrackRect" x="{{ $pad }}" y="0" width="{{ $plotW }}" height="{{ $cH }}" fill="transparent"/>
           </svg>
           <div id="repTooltip" class="hidden absolute pointer-events-none z-10 bg-inverse-surface text-inverse-on-surface px-3 py-2 rounded-lg shadow-xl text-xs whitespace-nowrap">
             <div id="repTtDate" class="font-semibold mb-1"></div>
@@ -234,6 +231,20 @@
         function hideRepTooltip() {
           document.getElementById('repTooltip').classList.add('hidden');
         }
+        document.getElementById('repCustomBtn').addEventListener('click', function() {
+          document.getElementById('repCustomRange').classList.toggle('hidden');
+        });
+        var repChart = document.getElementById('repChart');
+        repChart.addEventListener('mouseover', function(e) {
+          var circle = e.target.closest('.rep-point');
+          if (circle) highlightRepPoint(parseInt(circle.dataset.index), true);
+        });
+        repChart.addEventListener('mouseout', function(e) {
+          var circle = e.target.closest('.rep-point');
+          if (circle) highlightRepPoint(parseInt(circle.dataset.index), false);
+        });
+        document.getElementById('repTrackRect').addEventListener('mousemove', trackRepMove);
+        document.getElementById('repTrackRect').addEventListener('mouseleave', hideRepTooltip);
         </script>
         @endpush
         @endif

@@ -156,13 +156,13 @@
           <span class="font-label-md text-label-md">{{ now()->format('M d, Y') }}</span>
         </div>
         {{-- Botón para alternar entre modo claro y oscuro --}}
-        <button onclick="toggleTheme()" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cambiar tema">
+        <button id="themeBtn" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cambiar tema">
           <span id="darkIcon" class="material-symbols-outlined">dark_mode</span>
           <span id="lightIcon" class="material-symbols-outlined hidden">light_mode</span>
         </button>
         {{-- Campana de notificaciones con contador de no leídas y menú desplegable --}}
         <div class="relative" id="notifContainer">
-          <button onclick="toggleNotif()" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors relative" aria-label="Notificaciones">
+          <button id="notifBtn" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors relative" aria-label="Notificaciones">
             <span class="material-symbols-outlined">notifications</span>
             @if($unreadCount > 0)
               <span class="absolute top-1 right-1 w-4 h-4 bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center">{{ $unreadCount }}</span>
@@ -183,7 +183,7 @@
           </div>
         </div>
         <div class="relative" id="avatarContainer">
-          <button onclick="toggleAvatar()" class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-sm font-bold hover:opacity-80 transition-opacity cursor-pointer">
+          <button id="avatarBtn" class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-sm font-bold hover:opacity-80 transition-opacity cursor-pointer">
             {{ substr(Auth::user()->name, 0, 1) }}
           </button>
           <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-outline-variant z-50 overflow-hidden">
@@ -285,6 +285,9 @@
       document.getElementById('avatarDropdown')?.classList.add('hidden');
     }
   });
+  document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+  document.getElementById('notifBtn').addEventListener('click', toggleNotif);
+  document.getElementById('avatarBtn').addEventListener('click', toggleAvatar);
   </script>
   @stack('scripts')
 </body>

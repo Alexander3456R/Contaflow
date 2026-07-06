@@ -100,7 +100,7 @@
           <div class="relative group">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-focus-within:text-primary transition-colors">lock</span>
             <input class="w-full pl-10 pr-12 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md text-body-md placeholder:text-outline-variant" id="password" placeholder="••••••••" required="" type="password" name="password">
-            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface-variant transition-colors" onclick="togglePassword()" type="button" aria-label="Mostrar u ocultar contraseña">
+            <button id="passwordToggleBtn" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface-variant transition-colors" type="button" aria-label="Mostrar u ocultar contraseña">
               <span class="material-symbols-outlined" id="passwordIcon">visibility</span>
             </button>
           </div>
@@ -136,6 +136,7 @@
       passwordIcon.innerText = 'visibility';
     }
   }
+  document.getElementById('passwordToggleBtn').addEventListener('click', togglePassword);
   </script>
 </body>
 </html>

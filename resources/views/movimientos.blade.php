@@ -12,7 +12,7 @@
       <h3 class="font-headline-sm text-headline-sm text-on-surface">Historial de Transacciones</h3>
       <p class="text-on-surface-variant text-body-md">Gestione y supervise todos los registros financieros entrantes y salientes.</p>
     </div>
-    <button onclick="showCreateModal()" class="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+    <button id="createMovBtn" class="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
       <span class="material-symbols-outlined">add</span> Nuevo Movimiento
     </button>
   </div>
@@ -75,10 +75,10 @@
                 <a href="{{ route('movimientos.show', $t) }}" class="p-2 text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Ver detalle">
                   <span class="material-symbols-outlined">visibility</span>
                 </a>
-                <button onclick="editTransaction({{ $t->id }})" class="p-2 text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Editar">
+                <button data-action="edit" data-id="{{ $t->id }}" class="p-2 text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Editar">
                   <span class="material-symbols-outlined">edit</span>
                 </button>
-                <form method="POST" action="{{ route('movimientos.destroy', $t) }}" onsubmit="return confirm('¿Eliminar este movimiento?')" class="inline">
+                <form method="POST" action="{{ route('movimientos.destroy', $t) }}" class="delete-form inline">
                   @csrf @method('DELETE')
                   <button type="submit" class="p-2 text-error hover:bg-error-container/10 rounded-lg transition-colors" title="Eliminar">
                     <span class="material-symbols-outlined">delete</span>
@@ -132,11 +132,11 @@
 </div>
 
 {{-- Modal para crear un nuevo movimiento --}}
-<div id="createModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4" onclick="if(event.target===this)hideCreateModal()">
+<div id="createModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
   <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-center mb-6">
       <h3 class="font-headline-sm text-headline-sm">Nuevo Movimiento</h3>
-      <button onclick="hideCreateModal()" class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
+      <button id="createCloseBtn" class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
     </div>
     <form method="POST" action="{{ route('movimientos.store') }}" class="space-y-4">
       @csrf
@@ -171,18 +171,18 @@
       </div>
       <div class="flex gap-3 pt-2">
         <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-bold hover:opacity-90 transition-all">Guardar Movimiento</button>
-        <button type="button" onclick="hideCreateModal()" class="flex-1 bg-surface-container-high text-on-surface py-3 rounded-lg font-bold hover:opacity-90 transition-all">Cancelar</button>
+        <button type="button" id="createCancelBtn" class="flex-1 bg-surface-container-high text-on-surface py-3 rounded-lg font-bold hover:opacity-90 transition-all">Cancelar</button>
       </div>
     </form>
   </div>
 </div>
 
 {{-- Modal para editar un movimiento existente --}}
-<div id="editModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4" onclick="if(event.target===this)hideEditModal()">
+<div id="editModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
   <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-center mb-6">
       <h3 class="font-headline-sm text-headline-sm">Editar Movimiento</h3>
-      <button onclick="hideEditModal()" class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
+      <button id="editCloseBtn" class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
     </div>
     <form id="editForm" method="POST" action="" class="space-y-4">
       @csrf
@@ -218,7 +218,7 @@
       </div>
       <div class="flex gap-3 pt-2">
         <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-bold hover:opacity-90 transition-all">Actualizar Movimiento</button>
-        <button type="button" onclick="hideEditModal()" class="flex-1 bg-surface-container-high text-on-surface py-3 rounded-lg font-bold hover:opacity-90 transition-all">Cancelar</button>
+        <button type="button" id="editCancelBtn" class="flex-1 bg-surface-container-high text-on-surface py-3 rounded-lg font-bold hover:opacity-90 transition-all">Cancelar</button>
       </div>
     </form>
   </div>
@@ -254,6 +254,25 @@ function editTransaction(id) {
     });
 }
 
-
+document.getElementById('createMovBtn').addEventListener('click', showCreateModal);
+document.getElementById('createCloseBtn').addEventListener('click', hideCreateModal);
+document.getElementById('createCancelBtn').addEventListener('click', hideCreateModal);
+document.getElementById('editCloseBtn').addEventListener('click', hideEditModal);
+document.getElementById('editCancelBtn').addEventListener('click', hideEditModal);
+document.getElementById('createModal').addEventListener('click', function(e) {
+  if (e.target === this) hideCreateModal();
+});
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) hideEditModal();
+});
+document.querySelector('tbody').addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-action="edit"]');
+  if (btn) editTransaction(btn.dataset.id);
+});
+document.querySelector('tbody').addEventListener('submit', function(e) {
+  if (e.target.classList.contains('delete-form') && !confirm('¿Eliminar este movimiento?')) {
+    e.preventDefault();
+  }
+});
 </script>
 @endpush

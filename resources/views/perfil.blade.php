@@ -29,7 +29,7 @@
 
   {{-- Editar Perfil --}}
   <div class="bg-surface-container-lowest shadow rounded-xl border border-slate-200">
-    <button onclick="document.getElementById('editSection').classList.toggle('hidden')" class="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
+    <button id="editToggleBtn" class="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
           <span class="material-symbols-outlined">person</span>
@@ -62,7 +62,7 @@
 
   {{-- Cambio de contraseña --}}
   <div class="bg-surface-container-lowest shadow rounded-xl border border-slate-200">
-    <button onclick="document.getElementById('passwordSection').classList.toggle('hidden')" class="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
+    <button id="passwordToggleBtn" class="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
           <span class="material-symbols-outlined">lock</span>
@@ -99,7 +99,7 @@
   </div>
   {{-- Preguntas de seguridad --}}
   <div class="bg-surface-container-lowest shadow rounded-xl border border-slate-200">
-    <button onclick="document.getElementById('securitySection').classList.toggle('hidden')" class="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
+    <button id="securityToggleBtn" class="w-full flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
           <span class="material-symbols-outlined">security</span>
@@ -142,4 +142,17 @@
   </div>
 </div>
 
+@push('scripts')
+<script nonce="{{ $cspNonce }}">
+document.getElementById('editToggleBtn').addEventListener('click', function() {
+  document.getElementById('editSection').classList.toggle('hidden');
+});
+document.getElementById('passwordToggleBtn').addEventListener('click', function() {
+  document.getElementById('passwordSection').classList.toggle('hidden');
+});
+document.getElementById('securityToggleBtn').addEventListener('click', function() {
+  document.getElementById('securitySection').classList.toggle('hidden');
+});
+</script>
+@endpush
 @endsection
