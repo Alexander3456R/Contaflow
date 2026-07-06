@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html class="light" lang="es">
+<html lang="es">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>@yield('title', 'ContaFlow')</title>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script>if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');</script>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script>
   tailwind.config = {
@@ -53,11 +54,41 @@
   <style>
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
   body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
-  .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); }
+  html.dark body, html.dark .bg-background { background-color: #0f1117; }
+  html.dark .glass-card { background: rgba(30, 35, 50, 0.85); backdrop-filter: blur(10px); }
+  html.dark .bg-surface-container-lowest { background-color: #1a1d27; }
+  html.dark .bg-surface-container-low { background-color: #232733; }
+  html.dark .bg-surface-container { background-color: #2a2f3d; }
+  html.dark .bg-surface-container-high { background-color: #323846; }
+  html.dark .bg-surface-container-highest { background-color: #3b4252; }
+  html.dark .bg-surface-dim { background-color: #1a1d27; }
+  html.dark .bg-surface-bright { background-color: #2a2f3d; }
+  html.dark .text-on-surface { color: #e3e5ea; }
+  html.dark .text-on-surface-variant { color: #b0b5c4; }
+  html.dark .text-outline { color: #8a90a0; }
+  html.dark .border-outline-variant { border-color: #323846; }
+  html.dark .border-slate-200 { border-color: #323846; }
+  html.dark .bg-white { background-color: #1a1d27; }
+  html.dark .bg-white\/80 { background-color: rgba(26, 29, 39, 0.85); }
+  html.dark .bg-black\/50 { background-color: rgba(0, 0, 0, 0.7); }
+  html.dark .divide-outline-variant > * { border-color: #323846; }
+  html.dark .hover\:bg-surface-container-low:hover { background-color: #232733; }
+  html.dark .hover\:bg-surface-container-high:hover { background-color: #323846; }
+  html.dark .hover\:bg-outline-variant:hover { background-color: #323846; }
+  html.dark .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3); }
+  html.dark .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3); }
+  html.dark .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4); }
+  html.dark .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.35); }
+  html.dark .shadow-primary\/20 { box-shadow: 0 10px 15px -3px rgba(0, 74, 198, 0.25), 0 4px 6px -4px rgba(0, 74, 198, 0.2); }
+  html.dark .shadow-primary\/30 { box-shadow: 0 10px 15px -3px rgba(0, 74, 198, 0.35), 0 4px 6px -4px rgba(0, 74, 198, 0.3); }
+  html.dark .bg-surface-container-low\/10 { background-color: rgba(35, 39, 51, 0.1); }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #f1f1f1; }
+  html.dark ::-webkit-scrollbar-track { background: #232733; }
   ::-webkit-scrollbar-thumb { background: #c3c6d7; border-radius: 10px; }
+  html.dark ::-webkit-scrollbar-thumb { background: #4a5165; }
   ::-webkit-scrollbar-thumb:hover { background: #737686; }
+  html.dark ::-webkit-scrollbar-thumb:hover { background: #6b7388; }
   </style>
   @stack('styles')
 </head>
@@ -90,6 +121,10 @@
         <span class="material-symbols-outlined">history</span>
         <span class="font-body-md">Trazabilidad</span>
       </a>
+      <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ $isActive('perfil') }}">
+        <span class="material-symbols-outlined">account_circle</span>
+        <span class="font-body-md">Perfil</span>
+      </a>
     </nav>
     <div class="mt-auto px-6 pt-6 border-t border-outline-variant">
       <div class="flex items-center gap-3">
@@ -112,9 +147,6 @@
     {{-- Encabezado superior con título de página, fecha, campana de notificaciones y avatar de usuario --}}
     <header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-outline-variant shadow-sm flex justify-between items-center px-6 h-16">
       <div class="flex items-center gap-4">
-        <button class="md:hidden p-2 text-on-surface-variant active:scale-95" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" aria-label="Menú">
-          <span class="material-symbols-outlined">menu</span>
-        </button>
         <h2 class="font-headline-md text-headline-md text-primary">@yield('page-title', 'ContaFlow')</h2>
       </div>
       <div class="flex items-center gap-4">
@@ -122,6 +154,11 @@
           <span class="material-symbols-outlined text-[18px] mr-2">calendar_today</span>
           <span class="font-label-md text-label-md">{{ now()->format('M d, Y') }}</span>
         </div>
+        {{-- Botón para alternar entre modo claro y oscuro --}}
+        <button onclick="toggleTheme()" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors" aria-label="Cambiar tema">
+          <span id="darkIcon" class="material-symbols-outlined">dark_mode</span>
+          <span id="lightIcon" class="material-symbols-outlined hidden">light_mode</span>
+        </button>
         {{-- Campana de notificaciones con contador de no leídas y menú desplegable --}}
         <div class="relative" id="notifContainer">
           <button onclick="toggleNotif()" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors relative" aria-label="Notificaciones">
@@ -144,9 +181,24 @@
             </div>
           </div>
         </div>
-        <a href="{{ route('perfil') }}" class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-sm font-bold hover:opacity-80 transition-opacity">
-          {{ substr(Auth::user()->name, 0, 1) }}
-        </a>
+        <div class="relative" id="avatarContainer">
+          <button onclick="toggleAvatar()" class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-sm font-bold hover:opacity-80 transition-opacity cursor-pointer">
+            {{ substr(Auth::user()->name, 0, 1) }}
+          </button>
+          <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-outline-variant z-50 overflow-hidden">
+            <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low text-sm transition-colors">
+              <span class="material-symbols-outlined text-[18px]">settings</span>
+              <span>Ajustes</span>
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low text-sm text-error transition-colors">
+                <span class="material-symbols-outlined text-[18px]">logout</span>
+                <span>Cerrar Sesión</span>
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -181,6 +233,10 @@
         <span class="material-symbols-outlined">assessment</span>
         <span class="text-[10px]">Reportes</span>
       </a>
+      <a href="{{ route('trazabilidad') }}" class="flex flex-col items-center gap-0.5 {{ $isActiveBottom('trazabilidad') }}">
+        <span class="material-symbols-outlined">history</span>
+        <span class="text-[10px]">Trazabilidad</span>
+      </a>
       <a href="{{ route('perfil') }}" class="flex flex-col items-center gap-0.5 {{ $isActiveBottom('perfil') }}">
         <span class="material-symbols-outlined">account_circle</span>
         <span class="text-[10px]">Perfil</span>
@@ -189,52 +245,26 @@
     <div class="h-16 md:hidden"></div>
   </main>
 
-  {{-- Menú móvil superpuesto para navegación en pantallas pequeñas --}}
-  <div id="mobileMenu" class="hidden fixed inset-0 z-50 md:hidden">
-    <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('mobileMenu').classList.add('hidden')"></div>
-    <aside class="absolute left-0 top-0 h-full w-[280px] bg-surface-container-lowest border-r border-outline-variant shadow-xl flex flex-col py-8 z-50">
-      <div class="px-6 mb-10 flex justify-between items-center">
-        <h1 class="font-display-lg text-display-lg text-primary flex items-center gap-2"><span class="material-symbols-outlined text-[36px]">account_balance</span>ContaFlow</h1>
-        <button onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="text-on-surface-variant hover:text-on-surface" aria-label="Cerrar menú">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      <nav class="flex-1 space-y-1 px-4">
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ $isActive('dashboard') }}">
-          <span class="material-symbols-outlined">dashboard</span>
-          <span class="font-body-md">Dashboard</span>
-        </a>
-        <a href="{{ route('movimientos') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ $isActive(['movimientos', 'movimientos.store', 'movimientos.update', 'movimientos.destroy']) }}">
-          <span class="material-symbols-outlined">swap_horiz</span>
-          <span class="font-body-md">Movimientos</span>
-        </a>
-        <a href="{{ route('reportes') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ $isActive('reportes') }}">
-          <span class="material-symbols-outlined">assessment</span>
-          <span class="font-body-md">Reportes</span>
-        </a>
-        <a href="{{ route('trazabilidad') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ $isActive('trazabilidad') }}">
-          <span class="material-symbols-outlined">history</span>
-          <span class="font-body-md">Trazabilidad</span>
-        </a>
-        <a href="{{ route('perfil') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ $isActive('perfil') }}">
-          <span class="material-symbols-outlined">account_circle</span>
-          <span class="font-body-md">Perfil</span>
-        </a>
-      </nav>
-      <div class="mt-auto px-6 pt-6 border-t border-outline-variant">
-        <form method="POST" action="{{ route('logout') }}">
-          @csrf
-          <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/10 rounded-lg transition-all">
-            <span class="material-symbols-outlined">logout</span>
-            <span class="font-body-md">Cerrar Sesión</span>
-          </button>
-        </form>
-      </div>
-    </aside>
-  </div>
+  {{-- (mobile Menu eliminado — se usa nav inferior + avatar dropdown) --}}
 
-  {{-- Scripts para alternar notificaciones y cerrar el menú desplegable al hacer clic fuera --}}
+  {{-- Scripts para alternar tema oscuro/claro, notificaciones y cerrar el menú desplegable al hacer clic fuera --}}
   <script>
+  function toggleTheme() {
+    var html = document.documentElement;
+    var isDark = html.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.getElementById('darkIcon').classList.toggle('hidden', isDark);
+    document.getElementById('lightIcon').classList.toggle('hidden', !isDark);
+  }
+  (function() {
+    var isDark = document.documentElement.classList.contains('dark');
+    var di = document.getElementById('darkIcon');
+    var li = document.getElementById('lightIcon');
+    if (di && li) { di.classList.toggle('hidden', isDark); li.classList.toggle('hidden', !isDark); }
+  })();
+  function toggleAvatar() {
+    document.getElementById('avatarDropdown').classList.toggle('hidden');
+  }
   function toggleNotif() {
     var d = document.getElementById('notifDropdown');
     d.classList.toggle('hidden');
@@ -245,9 +275,13 @@
     }
   }
   document.addEventListener('click', function(e) {
-    var c = document.getElementById('notifContainer');
-    if (c && !c.contains(e.target)) {
+    var nc = document.getElementById('notifContainer');
+    if (nc && !nc.contains(e.target)) {
       document.getElementById('notifDropdown')?.classList.add('hidden');
+    }
+    var ac = document.getElementById('avatarContainer');
+    if (ac && !ac.contains(e.target)) {
+      document.getElementById('avatarDropdown')?.classList.add('hidden');
     }
   });
   </script>
