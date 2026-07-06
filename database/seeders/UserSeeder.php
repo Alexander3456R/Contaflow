@@ -8,6 +8,7 @@ use App\Models\SecurityQuestion;
 use App\Models\User;
 use App\Models\UserSecurityAnswer;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -19,8 +20,8 @@ class UserSeeder extends Seeder
         $answers = ['Respuesta 1', 'Respuesta 2', 'Respuesta 3', 'Mi respuesta', 'Otra respuesta'];
 
         $usersData = [
-            ['name' => 'Lic. María Delgado', 'email' => 'maria@contaflow.com', 'password' => bcrypt('password')],
-            ['name' => 'Admin ContaFlow', 'email' => 'admin@contaflow.com', 'password' => bcrypt(env('ADMIN_PASSWORD', 'admin123'))],
+            ['name' => 'Lic. María Delgado', 'email' => 'maria@contaflow.com', 'password' => Hash::make('password')],
+            ['name' => 'Admin ContaFlow', 'email' => 'admin@contaflow.com', 'password' => Hash::make(env('ADMIN_PASSWORD'))],
         ];
 
         foreach ($usersData as $data) {
@@ -40,7 +41,7 @@ class UserSeeder extends Seeder
             UserSecurityAnswer::create([
                 'user_id' => $user->id,
                 'security_question_id' => $q->id,
-                'answer' => bcrypt($answers[$i] ?? 'default'),
+                'answer' => Hash::make($answers[$i] ?? 'default'),
             ]);
         }
     }

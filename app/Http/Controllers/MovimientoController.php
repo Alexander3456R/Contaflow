@@ -84,8 +84,11 @@ class MovimientoController extends Controller
             $query->where('type', $type);
         }
 
-        if ($date = $request->get('date')) {
-            $query->whereDate('transaction_date', $date);
+        if ($from = $request->get('from')) {
+            $query->whereDate('transaction_date', '>=', $from);
+        }
+        if ($to = $request->get('to')) {
+            $query->whereDate('transaction_date', '<=', $to);
         }
 
         $transactions = $query->orderByDesc('transaction_date')->orderByDesc('created_at')->paginate(10);
@@ -209,17 +212,27 @@ class MovimientoController extends Controller
         $userId = Auth::id();
         $oldValues = $movimiento->toArray();
 
+        // Guardar posición original ANTES del update (necesario si cambia la fecha)
+        $oldDate = $movimiento->transaction_date;
+        $oldCreatedAt = $movimiento->created_at;
+        $oldId = $movimiento->id;
         $oldSigned = $movimiento->type === 'credito' ? (float) $movimiento->amount : -(float) $movimiento->amount;
         $newSigned = $validated['type'] === 'credito' ? (float) $validated['amount'] : -(float) $validated['amount'];
-        $delta = $newSigned - $oldSigned;
 
-        // Predecesor cronológico (transaction_date, created_at, id)
+        // Predecesor cronológico usando la posición original
         $predecessorBalance = $this->predecessorQuery(
-            $userId, $movimiento->transaction_date, $movimiento->created_at, $movimiento->id
+            $userId, $oldDate, $oldCreatedAt, $oldId
         )->value('balance') ?? 0;
 
         $newBalance = $predecessorBalance + $newSigned;
 
+        // 1. Remover efecto viejo de todos los sucesores de la posición original
+        if ($oldSigned !== 0.0) {
+            $this->successorQuery($userId, $oldDate, $oldCreatedAt, $oldId)
+                ->decrement('balance', $oldSigned);
+        }
+
+        // 2. Actualizar la transacción (incluyendo nueva fecha si cambió)
         $movimiento->update([
             'description' => $validated['description'],
             'type' => $validated['type'],
@@ -230,10 +243,11 @@ class MovimientoController extends Controller
             'reference' => $validated['reference'] ?? null,
         ]);
 
-        if ($delta !== 0.0) {
+        // 3. Aplicar efecto nuevo a todos los sucesores de la nueva posición
+        if ($newSigned !== 0.0) {
             $this->successorQuery(
                 $userId, $movimiento->transaction_date, $movimiento->created_at, $movimiento->id
-            )->increment('balance', $delta);
+            )->increment('balance', $newSigned);
         }
 
         AuditLog::create([

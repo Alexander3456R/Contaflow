@@ -26,7 +26,7 @@ Route::middleware('guest')->group(function () {
 
 // Rutas para usuarios autenticados: dashboard, movimientos, reportes, perfil, trazabilidad y notificaciones
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout'])->middleware('throttle:perfil')->name('logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

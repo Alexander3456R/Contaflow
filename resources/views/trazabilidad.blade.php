@@ -24,10 +24,30 @@
           <input name="search" value="{{ request('search') }}" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none text-body-md" placeholder="Buscar por acción, descripción, ID o usuario..." type="text"/>
         </div>
         <div class="flex gap-4 w-full lg:w-auto">
-          <input name="date" value="{{ request('date') }}" class="px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" type="date">
+          <div class="relative" id="dateRangeWrapper">
+            <input type="hidden" name="from" id="fromHidden" value="{{ request('from') }}">
+            <input type="hidden" name="to" id="toHidden" value="{{ request('to') }}">
+            <button type="button" id="dateRangeDisplay" class="flex items-center gap-2 px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm">
+              <span class="material-symbols-outlined text-sm text-outline">calendar_today</span>
+              <span id="dateRangeLabel" class="text-on-surface-variant whitespace-nowrap">Rango de fechas</span>
+              <span class="material-symbols-outlined text-sm text-on-surface-variant">expand_more</span>
+            </button>
+            <div id="dateRangeDropdown" class="hidden absolute top-full mt-1 right-0 z-30 bg-white border border-outline-variant rounded-xl shadow-xl p-4 min-w-[280px]">
+              <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex-1">
+                  <label class="block text-xs font-bold text-on-surface-variant mb-1">Desde</label>
+                  <input type="date" id="fromPicker" value="{{ request('from') }}" class="w-full px-3 py-2 border border-outline-variant rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div class="flex-1">
+                  <label class="block text-xs font-bold text-on-surface-variant mb-1">Hasta</label>
+                  <input type="date" id="toPicker" value="{{ request('to') }}" class="w-full px-3 py-2 border border-outline-variant rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary">
+                </div>
+              </div>
+            </div>
+          </div>
           <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-bold hover:opacity-90 transition-opacity"><span class="material-symbols-outlined">filter_list</span><span>Filtrar</span></button>
-          @if(request('search') || request('date'))
-            <a href="{{ route('trazabilidad') }}" class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg font-bold hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined">close</span><span>Limpiar</span></a>
+          @if(request()->anyFilled(['search', 'from', 'to']))
+            <a href="{{ route('trazabilidad') }}" class="flex items-center gap-1 px-3 py-2 text-on-surface-variant hover:text-error transition-colors rounded-lg hover:bg-error/5 font-bold text-sm"><span class="material-symbols-outlined text-[18px]">close</span> Limpiar</a>
           @endif
         </div>
       </form>
@@ -116,6 +136,68 @@
           <button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-lg opacity-50 cursor-not-allowed"><span class="material-symbols-outlined">chevron_right</span></button>
         @endif
       </div>
+      </div>
     </div>
-  </div>
-@endsection
+  @endsection
+
+  @push('scripts')
+  <script nonce="{{ $cspNonce }}">
+  (function() {
+    var wrapper = document.getElementById('dateRangeWrapper');
+    var display = document.getElementById('dateRangeDisplay');
+    var dropdown = document.getElementById('dateRangeDropdown');
+    var fromPicker = document.getElementById('fromPicker');
+    var toPicker = document.getElementById('toPicker');
+    var fromHidden = document.getElementById('fromHidden');
+    var toHidden = document.getElementById('toHidden');
+    var label = document.getElementById('dateRangeLabel');
+
+    function updateLabel() {
+      if (fromHidden.value && toHidden.value) {
+        var f = new Date(fromHidden.value + 'T12:00:00');
+        var t = new Date(toHidden.value + 'T12:00:00');
+        label.textContent = f.toLocaleDateString('es', {day:'numeric', month:'short'}) + ' – ' + t.toLocaleDateString('es', {day:'numeric', month:'short', year:'numeric'});
+      } else if (fromHidden.value) {
+        var f = new Date(fromHidden.value + 'T12:00:00');
+        label.textContent = 'Desde ' + f.toLocaleDateString('es', {day:'numeric', month:'short', year:'numeric'});
+      } else if (toHidden.value) {
+        var t = new Date(toHidden.value + 'T12:00:00');
+        label.textContent = 'Hasta ' + t.toLocaleDateString('es', {day:'numeric', month:'short', year:'numeric'});
+      } else {
+        label.textContent = 'Rango de fechas';
+      }
+    }
+
+    display.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+
+    fromPicker.addEventListener('change', function() {
+      fromHidden.value = this.value;
+      if (toHidden.value && this.value && this.value > toHidden.value) {
+        toPicker.value = this.value;
+        toHidden.value = this.value;
+      }
+      updateLabel();
+    });
+
+    toPicker.addEventListener('change', function() {
+      toHidden.value = this.value;
+      if (fromHidden.value && this.value && this.value < fromHidden.value) {
+        fromPicker.value = this.value;
+        fromHidden.value = this.value;
+      }
+      updateLabel();
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!wrapper.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    updateLabel();
+  })();
+  </script>
+  @endpush

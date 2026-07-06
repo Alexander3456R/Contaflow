@@ -23,9 +23,26 @@
         <input name="search" value="{{ request('search') }}" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Buscar por descripción o ID..." type="text"/>
       </div>
       <div class="flex flex-wrap items-center gap-3 w-full lg:w-2/3 lg:justify-end">
-        <div class="flex items-center gap-2 bg-surface-container-low px-3 py-2 border border-outline-variant rounded-lg">
-          <span class="material-symbols-outlined text-sm">calendar_today</span>
-          <input name="date" value="{{ request('date') }}" class="bg-transparent border-none p-0 text-sm focus:ring-0" type="date"/>
+        <div class="relative" id="dateRangeWrapper">
+          <input type="hidden" name="from" id="fromHidden" value="{{ request('from') }}">
+          <input type="hidden" name="to" id="toHidden" value="{{ request('to') }}">
+          <button type="button" id="dateRangeDisplay" class="flex items-center gap-2 px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm">
+            <span class="material-symbols-outlined text-sm text-outline">calendar_today</span>
+            <span id="dateRangeLabel" class="text-on-surface-variant whitespace-nowrap">Rango de fechas</span>
+            <span class="material-symbols-outlined text-sm text-on-surface-variant">expand_more</span>
+          </button>
+          <div id="dateRangeDropdown" class="hidden absolute top-full mt-1 left-0 z-30 bg-white border border-outline-variant rounded-xl shadow-xl p-4 min-w-[280px]">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <div class="flex-1">
+                <label class="block text-xs font-bold text-on-surface-variant mb-1">Desde</label>
+                <input type="date" id="fromPicker" value="{{ request('from') }}" class="w-full px-3 py-2 border border-outline-variant rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary">
+              </div>
+              <div class="flex-1">
+                <label class="block text-xs font-bold text-on-surface-variant mb-1">Hasta</label>
+                <input type="date" id="toPicker" value="{{ request('to') }}" class="w-full px-3 py-2 border border-outline-variant rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary">
+              </div>
+            </div>
+          </div>
         </div>
         <select name="type" class="bg-surface-container-low px-4 py-2 border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none">
           <option value="" {{ request('type') == '' ? 'selected' : '' }}>Todos los tipos</option>
@@ -33,6 +50,11 @@
           <option value="debito" {{ request('type') == 'debito' ? 'selected' : '' }}>Débitos</option>
         </select>
         <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-bold hover:opacity-90 transition-opacity"><span class="material-symbols-outlined">filter_list</span><span>Filtrar</span></button>
+        @if(request()->anyFilled(['search', 'from', 'to', 'type']))
+        <a href="{{ route('movimientos') }}" class="flex items-center gap-1 px-3 py-2 text-on-surface-variant hover:text-error transition-colors rounded-lg hover:bg-error/5 font-bold text-sm">
+          <span class="material-symbols-outlined text-[18px]">close</span> Limpiar
+        </a>
+        @endif
       </div>
     </div>
   </form>
@@ -265,14 +287,74 @@ document.getElementById('createModal').addEventListener('click', function(e) {
 document.getElementById('editModal').addEventListener('click', function(e) {
   if (e.target === this) hideEditModal();
 });
-document.querySelector('tbody').addEventListener('click', function(e) {
-  var btn = e.target.closest('[data-action="edit"]');
-  if (btn) editTransaction(btn.dataset.id);
-});
-document.querySelector('tbody').addEventListener('submit', function(e) {
-  if (e.target.classList.contains('delete-form') && !confirm('¿Eliminar este movimiento?')) {
-    e.preventDefault();
+var tbody = document.querySelector('tbody');
+if (tbody) {
+  tbody.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-action="edit"]');
+    if (btn) editTransaction(btn.dataset.id);
+  });
+  tbody.addEventListener('submit', function(e) {
+    if (e.target.classList.contains('delete-form') && !confirm('¿Eliminar este movimiento?')) {
+      e.preventDefault();
+    }
+  });
+}
+
+(function() {
+  var display = document.getElementById('dateRangeDisplay');
+  var dropdown = document.getElementById('dateRangeDropdown');
+  var fromPicker = document.getElementById('fromPicker');
+  var toPicker = document.getElementById('toPicker');
+  var fromHidden = document.getElementById('fromHidden');
+  var toHidden = document.getElementById('toHidden');
+  var label = document.getElementById('dateRangeLabel');
+
+  function updateLabel() {
+    if (fromHidden.value && toHidden.value) {
+      var f = new Date(fromHidden.value + 'T12:00:00');
+      var t = new Date(toHidden.value + 'T12:00:00');
+      label.textContent = f.toLocaleDateString('es', {day:'numeric', month:'short'}) + ' – ' + t.toLocaleDateString('es', {day:'numeric', month:'short', year:'numeric'});
+    } else if (fromHidden.value) {
+      var f = new Date(fromHidden.value + 'T12:00:00');
+      label.textContent = 'Desde ' + f.toLocaleDateString('es', {day:'numeric', month:'short', year:'numeric'});
+    } else if (toHidden.value) {
+      var t = new Date(toHidden.value + 'T12:00:00');
+      label.textContent = 'Hasta ' + t.toLocaleDateString('es', {day:'numeric', month:'short', year:'numeric'});
+    } else {
+      label.textContent = 'Rango de fechas';
+    }
   }
-});
+
+  display.addEventListener('click', function(e) {
+    e.stopPropagation();
+    dropdown.classList.toggle('hidden');
+  });
+
+  fromPicker.addEventListener('change', function() {
+    fromHidden.value = this.value;
+    if (toHidden.value && this.value && this.value > toHidden.value) {
+      toPicker.value = this.value;
+      toHidden.value = this.value;
+    }
+    updateLabel();
+  });
+
+  toPicker.addEventListener('change', function() {
+    toHidden.value = this.value;
+    if (fromHidden.value && this.value && this.value < fromHidden.value) {
+      fromPicker.value = this.value;
+      fromHidden.value = this.value;
+    }
+    updateLabel();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('dateRangeWrapper').contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+
+  updateLabel();
+})();
 </script>
 @endpush

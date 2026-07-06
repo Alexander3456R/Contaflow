@@ -91,7 +91,6 @@
   ::-webkit-scrollbar-thumb:hover { background: #737686; }
   html.dark ::-webkit-scrollbar-thumb:hover { background: #6b7388; }
   </style>
-  @stack('styles')
 </head>
 <body class="bg-background text-on-surface font-body-md">
   @php

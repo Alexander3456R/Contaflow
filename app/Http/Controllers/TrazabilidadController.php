@@ -33,8 +33,11 @@ class TrazabilidadController extends Controller
             });
         }
 
-        if ($date = $request->get('date')) {
-            $query->whereDate('created_at', $date);
+        if ($from = $request->get('from')) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+        if ($to = $request->get('to')) {
+            $query->whereDate('created_at', '<=', $to);
         }
 
         $logs = $query->latest()->paginate(10);

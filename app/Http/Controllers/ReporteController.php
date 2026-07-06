@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Common\Entity\Style\CellAlignment;
-use OpenSpout\Common\Entity\Style\Color;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\XLSX\Options;
 use OpenSpout\Writer\XLSX\Writer;
@@ -28,6 +27,12 @@ class ReporteController extends Controller
     public function index(Request $request): View
     {
         $userId = Auth::id();
+
+        $request->validate([
+            'range' => ['nullable', 'in:7d,30d,90d,1y,all,custom'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+        ]);
 
         $totalIncome = Transaction::where('user_id', $userId)
             ->where('type', 'credito')
