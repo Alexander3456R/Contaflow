@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\SecurityQuestion;
+use App\Models\UserSecurityAnswer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +23,12 @@ class PerfilController extends Controller
      */
     public function index(): View
     {
-        return view('perfil', ['user' => Auth::user()]);
+        $user = Auth::user();
+        $questions = SecurityQuestion::all();
+        $userAnswers = UserSecurityAnswer::with('question')
+            ->where('user_id', $user->id)
+            ->get();
+        return view('perfil', compact('user', 'questions', 'userAnswers'));
     }
 
     /**
@@ -56,5 +63,34 @@ class PerfilController extends Controller
         ]);
 
         return redirect()->route('perfil')->with('success', 'Contraseña actualizada exitosamente.');
+    }
+
+    /**
+     * Actualiza las preguntas y respuestas de seguridad del usuario.
+     */
+    public function updateSecurity(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'question_1' => ['required', 'exists:security_questions,id'],
+            'question_2' => ['required', 'exists:security_questions,id', 'different:question_1'],
+            'question_3' => ['required', 'exists:security_questions,id', 'different:question_1', 'different:question_2'],
+            'answer_1' => ['required', 'string', 'max:255'],
+            'answer_2' => ['required', 'string', 'max:255'],
+            'answer_3' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user->securityAnswers()->delete();
+
+        foreach (range(1, 3) as $i) {
+            UserSecurityAnswer::create([
+                'user_id' => $user->id,
+                'security_question_id' => $request->{"question_$i"},
+                'answer' => Hash::make($request->{"answer_$i"}),
+            ]);
+        }
+
+        return redirect()->route('perfil')->with('success', 'Preguntas de seguridad actualizadas exitosamente.');
     }
 }

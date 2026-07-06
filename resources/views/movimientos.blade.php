@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Movimientos')
-@section('page-title', 'Movimientos')
+@section('page-title')
+<span class="material-symbols-outlined">swap_horiz</span> Movimientos
+@endsection
 
 @section('content')
 <div class="p-6 md:p-8 space-y-6">

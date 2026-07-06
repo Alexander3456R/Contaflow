@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Movimiento #' . $movimiento->id)
-@section('page-title', 'Detalle del Movimiento')
+@section('page-title')
+<span class="material-symbols-outlined">receipt</span> Detalle del Movimiento
+@endsection
 
 @section('content')
 <div class="p-6 md:p-8 space-y-6">

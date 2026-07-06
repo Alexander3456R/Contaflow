@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Reportes')
-@section('page-title', 'Análisis Financiero')
+@section('page-title')
+<span class="material-symbols-outlined">assessment</span> Análisis Financiero
+@endsection
 
 @section('content')
   @php

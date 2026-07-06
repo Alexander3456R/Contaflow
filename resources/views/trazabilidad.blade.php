@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Trazabilidad')
-@section('page-title', 'Trazabilidad')
+@section('page-title')
+<span class="material-symbols-outlined">history</span> Trazabilidad
+@endsection
 
 @section('content')
   @php

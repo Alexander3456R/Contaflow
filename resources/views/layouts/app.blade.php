@@ -4,6 +4,7 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>@yield('title', 'ContaFlow')</title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
   <script>if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');</script>
@@ -147,7 +148,7 @@
     {{-- Encabezado superior con título de página, fecha, campana de notificaciones y avatar de usuario --}}
     <header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-outline-variant shadow-sm flex justify-between items-center px-6 h-16">
       <div class="flex items-center gap-4">
-        <h2 class="font-headline-md text-headline-md text-primary">@yield('page-title', 'ContaFlow')</h2>
+        <h2 class="font-headline-md text-headline-md text-primary flex items-center gap-2">@yield('page-title', 'ContaFlow')</h2>
       </div>
       <div class="flex items-center gap-4">
         <div class="hidden sm:flex items-center px-3 py-1 bg-surface-container-low rounded-full text-on-surface-variant">

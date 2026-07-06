@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
     Route::put('/perfil', [PerfilController::class, 'update'])->middleware('throttle:perfil')->name('perfil.update');
     Route::put('/perfil/password', [PerfilController::class, 'updatePassword'])->middleware('throttle:perfil')->name('perfil.password');
+    Route::put('/perfil/seguridad', [PerfilController::class, 'updateSecurity'])->middleware('throttle:perfil')->name('perfil.security');
 
     Route::get('/trazabilidad', [TrazabilidadController::class, 'index'])->name('trazabilidad');
 
