@@ -45,7 +45,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{ $cspNonce }}">
 document.addEventListener('DOMContentLoaded', function () {
     var checklist = document.getElementById('password-checklist');
     if (!checklist) return;

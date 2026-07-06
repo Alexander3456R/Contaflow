@@ -4,10 +4,10 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Crear Cuenta - ContaFlow</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries" nonce="{{ $cspNonce }}"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-  <script>
+  <script nonce="{{ $cspNonce }}">
   tailwind.config = {
     darkMode: "class",
     theme: {
@@ -173,7 +173,7 @@
       </p>
     </footer>
   </main>
-  <script>
+  <script nonce="{{ $cspNonce }}">
   document.querySelectorAll('input').forEach(function (input) {
     input.addEventListener('focus', function () {
       input.parentElement.classList.add('ring-2', 'ring-primary/10');

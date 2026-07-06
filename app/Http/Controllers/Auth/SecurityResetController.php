@@ -64,6 +64,7 @@ class SecurityResetController extends Controller
 
         $answers = UserSecurityAnswer::with('question')
             ->where('user_id', $userId)
+            ->orderBy('id')
             ->get();
 
         return view('auth.security-questions', compact('answers'));
@@ -85,7 +86,7 @@ class SecurityResetController extends Controller
             'answer_3' => ['required', 'string'],
         ]);
 
-        $answers = UserSecurityAnswer::where('user_id', $userId)->get();
+        $answers = UserSecurityAnswer::where('user_id', $userId)->orderBy('id')->get();
 
         $allCorrect = true;
 

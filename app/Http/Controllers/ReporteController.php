@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -24,7 +25,7 @@ class ReporteController extends Controller
     /**
      * Prepara datos de resumen, gastos por categoría y flujo mensual para la vista.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $userId = Auth::id();
 
@@ -45,6 +46,13 @@ class ReporteController extends Controller
             ->orderByDesc('total')
             ->get();
 
+        $incomeByCategory = Transaction::where('user_id', $userId)
+            ->where('type', 'credito')
+            ->selectRaw('COALESCE(category, "Sin categoría") as category, SUM(amount) as total')
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->get();
+
         $driver = DB::connection()->getDriverName();
         $dateExpr = $driver === 'sqlite'
             ? "strftime('%Y-%m', transaction_date)"
@@ -56,20 +64,63 @@ class ReporteController extends Controller
             ->orderBy('month')
             ->get();
 
-        $receivables = Transaction::where('user_id', $userId)
-            ->where('type', 'credito')
-            ->whereNull('reference')
-            ->sum('amount');
+        $range = $request->get('range', '1y');
+        $customFrom = $request->get('from');
+        $customTo = $request->get('to');
 
-        $payables = Transaction::where('user_id', $userId)
-            ->where('type', 'debito')
-            ->whereNull('reference')
-            ->sum('amount');
+        $startDate = match ($range) {
+            '7d'   => now()->subDays(7)->startOfDay(),
+            '30d'  => now()->subDays(30)->startOfDay(),
+            '90d'  => now()->subDays(90)->startOfDay(),
+            '1y'   => now()->subYear()->startOfDay(),
+            'all'  => null,
+            'custom' => $customFrom ? Carbon::parse($customFrom)->startOfDay() : now()->subDays(30)->startOfDay(),
+            default => now()->subYear()->startOfDay(),
+        };
+
+        $endDate = match ($range) {
+            'custom' => $customTo ? Carbon::parse($customTo)->endOfDay() : now()->endOfDay(),
+            default  => now()->endOfDay(),
+        };
+
+        $chartQuery = Transaction::where('user_id', $userId)
+            ->selectRaw('DATE(transaction_date) as date, SUM(CASE WHEN type = "credito" THEN amount ELSE 0 END) as income, SUM(CASE WHEN type = "debito" THEN amount ELSE 0 END) as expenses');
+
+        if ($startDate) {
+            $chartQuery->where('transaction_date', '>=', $startDate);
+        }
+        if ($endDate) {
+            $chartQuery->where('transaction_date', '<=', $endDate);
+        }
+
+        $chartData = $chartQuery
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->map(fn($row) => (object)[
+                'date'     => Carbon::parse($row->date),
+                'income'   => (float)$row->income,
+                'expenses' => (float)$row->expenses,
+                'net'      => (float)$row->income - (float)$row->expenses,
+            ]);
+
+        $rangeLabel = match ($range) {
+            '7d'     => 'últimos 7 días',
+            '30d'    => 'últimos 30 días',
+            '90d'    => 'últimos 90 días',
+            '1y'     => 'último año',
+            'all'    => 'todo el historial',
+            'custom' => ($customFrom && $customTo)
+                ? Carbon::parse($customFrom)->format('d/m/Y') . ' - ' . Carbon::parse($customTo)->format('d/m/Y')
+                : 'personalizado',
+            default => 'último año',
+        };
 
         return view('reportes', compact(
             'totalIncome', 'totalExpenses', 'netProfit',
-            'expensesByCategory', 'monthlyData',
-            'receivables', 'payables'
+            'expensesByCategory', 'incomeByCategory', 'monthlyData',
+            'chartData', 'range', 'rangeLabel',
+            'customFrom', 'customTo'
         ));
     }
 

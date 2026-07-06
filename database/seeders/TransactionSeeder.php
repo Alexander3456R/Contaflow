@@ -22,8 +22,20 @@ class TransactionSeeder extends Seeder
         foreach ($users as $user) {
             $balance = 0;
 
-            for ($i = 0; $i < 30; $i++) {
-                $date = now()->subDays($i);
+            // Genera ~80 transacciones por usuario desde enero 2024 hasta la fecha actual
+            $start = now()->setDate(2024, 1, 1);
+            $end = now();
+            $daysRange = (int) $start->diffInDays($end);
+            $count = 80;
+
+            $dates = collect();
+            for ($i = 0; $i < $count; $i++) {
+                $randomDay = fake()->numberBetween(0, $daysRange);
+                $dates->push($start->copy()->addDays($randomDay));
+            }
+            $dates = $dates->sort()->values();
+
+            foreach ($dates as $date) {
                 $type = fake()->randomElement(['credito', 'debito']);
 
                 if ($type === 'credito') {
@@ -39,7 +51,7 @@ class TransactionSeeder extends Seeder
                     'description' => fake()->sentence(3),
                     'type' => $type,
                     'amount' => $amount,
-                    'balance' => max($balance, 0),
+                    'balance' => $balance,
                     'transaction_date' => $date->format('Y-m-d'),
                     'category' => fake()->randomElement(self::CATEGORIES),
                     'reference' => fake()->optional(0.4)->bothify('FACT-####'),

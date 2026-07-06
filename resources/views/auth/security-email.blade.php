@@ -4,10 +4,10 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Recuperar Contraseña - ContaFlow</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries" nonce="{{ $cspNonce }}"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-  <script>tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary":"#004ac6","on-primary":"#ffffff","on-surface":"#191c1e","on-surface-variant":"#434655","outline":"#737686","outline-variant":"#c3c6d7","error":"#ba1a1a","surface-container-low":"#f2f4f6","surface-container-high":"#e6e8ea","surface":"#f7f9fb"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},fontFamily:{"label-md":["Inter"],"body-md":["Inter"],"headline-md":["Inter"]},fontSize:{"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.05em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-md":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"600"}]}}}}</script>
+  <script nonce="{{ $cspNonce }}">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary":"#004ac6","on-primary":"#ffffff","on-surface":"#191c1e","on-surface-variant":"#434655","outline":"#737686","outline-variant":"#c3c6d7","error":"#ba1a1a","surface-container-low":"#f2f4f6","surface-container-high":"#e6e8ea","surface":"#f7f9fb"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},fontFamily:{"label-md":["Inter"],"body-md":["Inter"],"headline-md":["Inter"]},fontSize:{"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.05em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-md":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"600"}]}}}}</script>
   <style>body{font-family:'Inter',sans-serif;background-color:#f7f9fb}.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;display:inline-block;line-height:1}.glass-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border:1px solid #e2e8f0}.input-focus-ring:focus{outline:none;border-color:#004ac6;box-shadow:0 0 0 2px rgba(0,74,198,0.2)}</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">

@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
 
         $usersData = [
             ['name' => 'Lic. María Delgado', 'email' => 'maria@contaflow.com', 'password' => bcrypt('password')],
-            ['name' => 'Admin ContaFlow', 'email' => 'admin@contaflow.com', 'password' => bcrypt('admin123')],
+            ['name' => 'Admin ContaFlow', 'email' => 'admin@contaflow.com', 'password' => bcrypt(env('ADMIN_PASSWORD', 'admin123'))],
         ];
 
         foreach ($usersData as $data) {

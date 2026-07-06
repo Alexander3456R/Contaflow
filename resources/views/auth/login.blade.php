@@ -6,8 +6,8 @@
   <title>ContaFlow - Iniciar Sesión</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries" nonce="{{ $cspNonce }}"></script>
+  <script nonce="{{ $cspNonce }}">
   tailwind.config = {
     darkMode: "class",
     theme: {
@@ -124,7 +124,7 @@
       </p>
     </div>
   </main>
-  <script>
+  <script nonce="{{ $cspNonce }}">
   function togglePassword() {
     var passwordInput = document.getElementById('password');
     var passwordIcon = document.getElementById('passwordIcon');

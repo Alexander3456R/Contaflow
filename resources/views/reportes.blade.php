@@ -10,12 +10,8 @@
   $total = $totalIncome + $totalExpenses;
   $incomePct = $total > 0 ? round($totalIncome / $total * 100) : 0;
   $expensePct = $total > 0 ? round($totalExpenses / $total * 100) : 0;
-  $totalRp = $receivables + $payables;
-  $receivablesPct = $totalRp > 0 ? round($receivables / $totalRp * 100) : 0;
-  $payablesPct = $totalRp > 0 ? round($payables / $totalRp * 100) : 0;
-
   @endphp
-  <div class="p-6 md:p-8 space-y-6 max-w-[1200px] mx-auto">
+  <div class="p-6 md:p-8 space-y-6">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
       <div>
         <p class="text-label-md text-on-surface-variant">Resumen financiero basado en tus movimientos registrados.</p>
@@ -54,64 +50,97 @@
         </div>
       </div>
 
-      {{-- Gráfico de tendencia de flujo de caja mensual con tooltip interactivo --}}
+      {{-- Gráfico de Ingresos vs Egresos con filtro de fechas --}}
       <div class="md:col-span-12 bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-slate-200">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div><h2 class="font-headline-sm text-headline-sm text-on-surface">Tendencia de Flujo de Caja</h2><p class="text-body-md text-on-surface-variant">Progreso mensual del año actual</p></div>
-          <div class="flex items-center gap-4"><div class="flex items-center gap-2"><span class="w-3 h-0.5 bg-primary"></span><span class="text-label-md font-label-md">Ingresos</span></div></div>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h3 class="font-headline-sm text-headline-sm text-on-surface">Ingresos vs Egresos</h3>
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="{{ route('reportes', ['range' => '7d']) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === '7d' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">7D</a>
+            <a href="{{ route('reportes', ['range' => '30d']) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === '30d' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">30D</a>
+            <a href="{{ route('reportes', ['range' => '90d']) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === '90d' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">90D</a>
+            <a href="{{ route('reportes', ['range' => '1y']) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === '1y' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">1A</a>
+            <a href="{{ route('reportes', ['range' => 'all']) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === 'all' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">Todo</a>
+            <button onclick="document.getElementById('repCustomRange').classList.toggle('hidden')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $range === 'custom' ? 'bg-primary text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-primary-container/20' }}">
+              <span class="material-symbols-outlined text-[14px]">calendar_month</span>
+            </button>
+          </div>
         </div>
-        @if($monthlyData->isEmpty())
+        <form id="repCustomRange" method="GET" action="{{ route('reportes') }}" class="{{ $range === 'custom' ? '' : 'hidden' }} flex items-center gap-3 mb-4 px-1">
+          <input type="hidden" name="range" value="custom">
+          <label class="text-xs text-on-surface-variant">Desde:</label>
+          <input type="date" name="from" value="{{ $customFrom ?? '' }}" class="px-3 py-1.5 border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none">
+          <label class="text-xs text-on-surface-variant">Hasta:</label>
+          <input type="date" name="to" value="{{ $customTo ?? '' }}" class="px-3 py-1.5 border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none">
+          <button type="submit" class="px-4 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:opacity-90">Aplicar</button>
+        </form>
+        @if($chartData->isNotEmpty())
+          <div class="text-label-md text-on-surface-variant mb-2">{{ $rangeLabel }}</div>
+        @endif
+        @if($chartData->isEmpty())
           <div class="flex flex-col items-center justify-center py-16 text-on-surface-variant">
             <span class="material-symbols-outlined text-[48px] mb-2">show_chart</span>
-            <p class="text-body-md">Sin datos mensuales para mostrar</p>
+            <p class="text-body-md">Sin datos para mostrar</p>
           </div>
         @else
         @php
-          $allValues = $monthlyData->map(fn($r) => (float)$r->income);
-          $valCount = $allValues->count();
-          $valMin = 0;
-          $valMax = max(1, $allValues->max());
-          $valRange = $valMax - $valMin;
+          $allIncome = $chartData->pluck('income');
+          $allExpenses = $chartData->pluck('expenses');
+          $allVals = $allIncome->merge($allExpenses);
+          $count = max($chartData->count(), 2);
+          $cMin = 0;
+          $cMax = max(1, $allVals->max());
+          $cRange = $cMax - $cMin;
           $cW = 800;
           $cH = 220;
           $pad = 55;
           $plotH = $cH - $pad * 2;
           $plotW = $cW - $pad * 2;
 
-          $coords = $allValues->map(fn($v, $i) => [
-            'x'       => round($pad + ($i / max($valCount - 1, 1)) * $plotW),
-            'y'       => round($pad + $plotH - (($v - $valMin) / $valRange) * $plotH),
-            'label'   => $monthlyData[$i]->month,
-            'income'  => number_format((float)$monthlyData[$i]->income, 2),
-            'expenses'=> number_format((float)$monthlyData[$i]->expenses, 2),
-            'net'     => number_format((float)$monthlyData[$i]->income - (float)$monthlyData[$i]->expenses, 2),
+          $coords = $allIncome->map(fn($v, $i) => [
+            'x'        => round($pad + ($i / max($count - 1, 1)) * $plotW),
+            'yIncome'  => round($pad + $plotH - ($v / $cRange) * $plotH),
+            'yExpense' => round($pad + $plotH - ($allExpenses[$i] / $cRange) * $plotH),
+            'date'     => $chartData[$i]->date->format('M d, Y'),
+            'income'   => number_format((float)$chartData[$i]->income, 2),
+            'expenses' => number_format((float)$chartData[$i]->expenses, 2),
+            'net'      => number_format((float)$chartData[$i]->net, 2),
           ]);
 
-          $segments = [];
-          $first = true;
+          $incSegs = []; $expSegs = []; $first = true;
           foreach ($coords as $c) {
-            $segments[] = $first ? "M {$c['x']} {$c['y']}" : "L {$c['x']} {$c['y']}";
+            $incSegs[] = $first ? "M {$c['x']} {$c['yIncome']}" : "L {$c['x']} {$c['yIncome']}";
+            $expSegs[] = $first ? "M {$c['x']} {$c['yExpense']}" : "L {$c['x']} {$c['yExpense']}";
             $first = false;
           }
-          $pathD = implode(' ', $segments);
+          $incPath = implode(' ', $incSegs);
+          $expPath = implode(' ', $expSegs);
           $lastC = $coords->last();
-          $areaD = $pathD . " L {$lastC['x']} {$cH} L {$pad} {$cH} Z";
+          $incArea = $incPath . " L {$lastC['x']} {$cH} L {$pad} {$cH} Z";
+          $expArea = $expPath . " L {$lastC['x']} {$cH} L {$pad} {$cH} Z";
 
           $yLabels = [];
           for ($i = 0; $i <= 4; $i++) {
-            $val = $valMin + ($valRange * $i / 4);
+            $val = $cMin + ($cRange * $i / 4);
             $yLabels[] = [
-              'y' => round($pad + $plotH - ($i / 4) * $plotH),
+              'y'     => round($pad + $plotH - ($i / 4) * $plotH),
               'label' => '$' . number_format($val, 0),
             ];
           }
         @endphp
-        <div class="w-full relative" id="repChartContainer">
-          <svg class="w-full h-64 overflow-visible" viewBox="0 0 {{ $cW }} {{ $cH }}" id="repChart">
+        <div class="relative flex-grow" id="repChartContainer">
+          <div class="flex items-center gap-4 mb-3">
+            <div class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-primary"></span><span class="text-label-md font-label-md">Ingresos</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-error"></span><span class="text-label-md font-label-md">Egresos</span></div>
+          </div>
+          <svg class="w-full h-full overflow-visible" viewBox="0 0 {{ $cW }} {{ $cH }}" id="repChart">
             <defs>
-              <linearGradient id="repGradient" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stop-color="#004ac6" stop-opacity="0.2"/>
+              <linearGradient id="repGradInc" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#004ac6" stop-opacity="0.15"/>
                 <stop offset="100%" stop-color="#004ac6" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="repGradExp" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#ba1a1a" stop-opacity="0.12"/>
+                <stop offset="100%" stop-color="#ba1a1a" stop-opacity="0"/>
               </linearGradient>
             </defs>
             @foreach($yLabels as $l)
@@ -119,11 +148,17 @@
               <line stroke="#E2E8F0" stroke-dasharray="3,3" x1="{{ $pad }}" x2="{{ $cW }}" y1="{{ $l['y'] }}" y2="{{ $l['y'] }}"/>
             @endforeach
             <line stroke="#CBD5E1" x1="{{ $pad }}" x2="{{ $cW }}" y1="{{ $cH - $pad }}" y2="{{ $cH - $pad }}"/>
-            <path d="{{ $areaD }}" fill="url(#repGradient)"/>
-            <path d="{{ $pathD }}" fill="none" stroke="#004ac6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/>
+            <path d="{{ $incArea }}" fill="url(#repGradInc)"/>
+            <path d="{{ $incPath }}" fill="none" stroke="#004ac6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/>
+            <path d="{{ $expPath }}" fill="none" stroke="#ba1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/>
             @foreach($coords as $i => $c)
-              <circle cx="{{ $c['x'] }}" cy="{{ $c['y'] }}" fill="#004ac6" r="4" stroke="white" stroke-width="2"
-                      data-index="{{ $i }}" data-label="{{ $c['label'] }}" data-income="{{ $c['income'] }}"
+              <circle cx="{{ $c['x'] }}" cy="{{ $c['yIncome'] }}" fill="#004ac6" r="4" stroke="white" stroke-width="2"
+                      data-index="{{ $i }}" data-date="{{ $c['date'] }}" data-income="{{ $c['income'] }}"
+                      data-expenses="{{ $c['expenses'] }}" data-net="{{ $c['net'] }}"
+                      class="rep-point cursor-pointer"
+                      onmouseenter="highlightRepPoint({{ $i }}, true)" onmouseleave="highlightRepPoint({{ $i }}, false)"/>
+              <circle cx="{{ $c['x'] }}" cy="{{ $c['yExpense'] }}" fill="#ba1a1a" r="4" stroke="white" stroke-width="2"
+                      data-index="{{ $i }}" data-date="{{ $c['date'] }}" data-income="{{ $c['income'] }}"
                       data-expenses="{{ $c['expenses'] }}" data-net="{{ $c['net'] }}"
                       class="rep-point cursor-pointer"
                       onmouseenter="highlightRepPoint({{ $i }}, true)" onmouseleave="highlightRepPoint({{ $i }}, false)"/>
@@ -131,13 +166,8 @@
             <rect x="{{ $pad }}" y="0" width="{{ $plotW }}" height="{{ $cH }}" fill="transparent"
                   onmousemove="trackRepMove(event)" onmouseleave="hideRepTooltip()"/>
           </svg>
-          <div class="flex justify-between mt-2 px-2 text-[10px] font-bold text-on-surface-variant uppercase">
-            @foreach($monthlyData as $p)
-              <span>{{ $p->month }}</span>
-            @endforeach
-          </div>
           <div id="repTooltip" class="hidden absolute pointer-events-none z-10 bg-inverse-surface text-inverse-on-surface px-3 py-2 rounded-lg shadow-xl text-xs whitespace-nowrap">
-            <div id="repTtLabel" class="font-semibold mb-1"></div>
+            <div id="repTtDate" class="font-semibold mb-1"></div>
             <div class="grid grid-cols-2 gap-x-4 gap-y-0.5">
               <span>Ingresos:</span><span id="repTtIncome" class="text-right font-medium text-tertiary"></span>
               <span>Egresos:</span><span id="repTtExpenses" class="text-right font-medium text-error"></span>
@@ -146,14 +176,16 @@
           </div>
         </div>
         @push('scripts')
-        <script>
+        <script nonce="{{ $cspNonce }}">
         var repData = @json($coords);
         function highlightRepPoint(idx, show) {
           var pts = document.querySelectorAll('.rep-point');
           pts.forEach(function(p) { p.setAttribute('r', '4'); p.setAttribute('stroke-width', '2'); });
           if (!show) { hideRepTooltip(); return; }
-          var pt = pts[idx]; if (!pt) return;
+          var pt = pts[idx * 2]; if (!pt) return;
           pt.setAttribute('r', '7'); pt.setAttribute('stroke-width', '3');
+          var pt2 = pts[idx * 2 + 1];
+          if (pt2) { pt2.setAttribute('r', '7'); pt2.setAttribute('stroke-width', '3'); }
           positionRepTooltip(pt, idx);
         }
         function trackRepMove(e) {
@@ -170,8 +202,10 @@
           });
           var pts = document.querySelectorAll('.rep-point');
           pts.forEach(function(p) { p.setAttribute('r', '4'); p.setAttribute('stroke-width', '2'); });
-          var pt = pts[closest]; if (!pt) return;
+          var pt = pts[closest * 2]; if (!pt) return;
           pt.setAttribute('r', '7'); pt.setAttribute('stroke-width', '3');
+          var pt2 = pts[closest * 2 + 1];
+          if (pt2) { pt2.setAttribute('r', '7'); pt2.setAttribute('stroke-width', '3'); }
           positionRepTooltip(pt, closest);
         }
         function positionRepTooltip(pt, idx) {
@@ -184,7 +218,7 @@
           var scaleY = svgRect.height / {{ $cH }};
           var cx = parseFloat(pt.getAttribute('cx')) * scaleX;
           var cy = parseFloat(pt.getAttribute('cy')) * scaleY;
-          document.getElementById('repTtLabel').textContent = repData[idx].label;
+          document.getElementById('repTtDate').textContent = repData[idx].date;
           document.getElementById('repTtIncome').textContent = '$' + repData[idx].income;
           document.getElementById('repTtExpenses').textContent = '$' + repData[idx].expenses;
           document.getElementById('repTtNet').textContent = '$' + repData[idx].net;
@@ -205,57 +239,50 @@
         @endif
       </div>
 
-      {{-- Cuentas por cobrar y por pagar con barras de progreso --}}
-      <div class="md:col-span-12 lg:col-span-6 bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-slate-200">
-        <h2 class="font-headline-sm text-headline-sm text-on-surface mb-6">Cuentas por Cobrar vs Pagar</h2>
-        <div class="space-y-6">
-          <div class="p-4 bg-surface-container-low rounded-xl">
-            <div class="flex justify-between items-end mb-2">
-              <div>
-                <p class="text-label-md font-label-md text-on-surface-variant uppercase">Por Cobrar</p>
-                <p class="text-headline-sm font-bold text-tertiary">${{ number_format($receivables, 2) }}</p>
+      {{-- Gastos e Ingresos por categoría en grid de 2 columnas --}}
+      <div class="md:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-gutter">
+        <div class="bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-slate-200">
+          <h2 class="font-headline-sm text-headline-sm text-on-surface mb-6">Gastos por Categor&iacute;a</h2>
+          <div class="space-y-5">
+            @forelse($expensesByCategory as $cat)
+              <div class="space-y-2">
+                <div class="flex justify-between items-center text-body-md font-body-md">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-{{ $loop->index === 0 ? 'primary' : ($loop->index === 1 ? 'secondary' : ($loop->index === 2 ? 'tertiary-container' : 'outline')) }}"></span>
+                    <span>{{ $cat->category }}</span>
+                  </div>
+                  <span class="font-numeric-md font-bold text-on-surface">${{ number_format($cat->total, 2) }}</span>
+                </div>
+                <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-{{ $loop->index === 0 ? 'primary' : ($loop->index === 1 ? 'secondary' : ($loop->index === 2 ? 'tertiary-container' : 'outline')) }}" style="width: {{ $totalExpenses > 0 ? ($cat->total / $totalExpenses * 100) : 0 }}%;"></div>
+                </div>
               </div>
-              <span class="text-body-md font-medium text-on-surface-variant">{{ $receivablesPct }}% Cobrado</span>
-            </div>
-            <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
-              <div class="h-full bg-tertiary" style="width: {{ $receivablesPct }}%;"></div>
-            </div>
-          </div>
-          <div class="p-4 bg-surface-container-low rounded-xl">
-            <div class="flex justify-between items-end mb-2">
-              <div>
-                <p class="text-label-md font-label-md text-on-surface-variant uppercase">Por Pagar</p>
-                <p class="text-headline-sm font-bold text-error">${{ number_format($payables, 2) }}</p>
-              </div>
-              <span class="text-body-md font-medium text-on-surface-variant">{{ $payablesPct }}% Pagado</span>
-            </div>
-            <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
-              <div class="h-full bg-error" style="width: {{ $payablesPct }}%;"></div>
-            </div>
+            @empty
+              <p class="text-on-surface-variant text-center">Sin datos de gastos</p>
+            @endforelse
           </div>
         </div>
-      </div>
 
-      {{-- Gastos agrupados por categoría con barras horizontales --}}
-      <div class="md:col-span-12 lg:col-span-6 bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-slate-200">
-        <h2 class="font-headline-sm text-headline-sm text-on-surface mb-6">Gastos por Categoría</h2>
-        <div class="space-y-5">
-          @forelse($expensesByCategory as $cat)
-            <div class="space-y-2">
-              <div class="flex justify-between items-center text-body-md font-body-md">
-                <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-{{ $loop->index === 0 ? 'primary' : ($loop->index === 1 ? 'secondary' : ($loop->index === 2 ? 'tertiary-container' : 'outline')) }}"></span>
-                  <span>{{ $cat->category }}</span>
+        <div class="bg-surface-container-lowest rounded-xl p-card-padding shadow-sm border border-slate-200">
+          <h2 class="font-headline-sm text-headline-sm text-on-surface mb-6">Ingresos por Categor&iacute;a</h2>
+          <div class="space-y-5">
+            @forelse($incomeByCategory as $cat)
+              <div class="space-y-2">
+                <div class="flex justify-between items-center text-body-md font-body-md">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-{{ $loop->index === 0 ? 'tertiary' : ($loop->index === 1 ? 'secondary-container' : ($loop->index === 2 ? 'primary-container' : 'outline')) }}"></span>
+                    <span>{{ $cat->category }}</span>
+                  </div>
+                  <span class="font-numeric-md font-bold text-on-surface">${{ number_format($cat->total, 2) }}</span>
                 </div>
-                <span class="font-numeric-md font-bold text-on-surface">${{ number_format($cat->total, 2) }}</span>
+                <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-{{ $loop->index === 0 ? 'tertiary' : ($loop->index === 1 ? 'secondary-container' : ($loop->index === 2 ? 'primary-container' : 'outline')) }}" style="width: {{ $totalIncome > 0 ? ($cat->total / $totalIncome * 100) : 0 }}%;"></div>
+                </div>
               </div>
-              <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
-                <div class="h-full bg-{{ $loop->index === 0 ? 'primary' : ($loop->index === 1 ? 'secondary' : ($loop->index === 2 ? 'tertiary-container' : 'outline')) }}" style="width: {{ $totalExpenses > 0 ? ($cat->total / $totalExpenses * 100) : 0 }}%;"></div>
-              </div>
-            </div>
-          @empty
-            <p class="text-on-surface-variant text-center">Sin datos de gastos</p>
-          @endforelse
+            @empty
+              <p class="text-on-surface-variant text-center">Sin datos de ingresos</p>
+            @endforelse
+          </div>
         </div>
       </div>
     </div>

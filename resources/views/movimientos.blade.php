@@ -163,7 +163,7 @@
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Categoría</label>
-        <input name="category" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Ej: Prestamo, Regalo, Sueldo, etc.">
+        <input name="category" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Ej: Gastos, Prestamo, Regalo, Sueldo, etc.">
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Referencia</label>
@@ -210,7 +210,7 @@
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Categoría</label>
-        <input name="category" id="edit_category" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Ej: Prestamo, Regalo, Sueldo, etc.">
+        <input name="category" id="edit_category" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Ej: Gastos, Prestamo, Regalo, Sueldo, etc.">
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Referencia</label>
@@ -226,7 +226,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce }}">
 function showCreateModal() { document.getElementById('createModal').classList.remove('hidden'); }
 function hideCreateModal() { document.getElementById('createModal').classList.add('hidden'); }
 

@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -17,6 +18,52 @@ use Illuminate\View\View;
  */
 class MovimientoController extends Controller
 {
+    /**
+     * Query de transacciones cronológicamente anteriores a una dada.
+     * Orden: transaction_date ASC → created_at ASC → id ASC.
+     */
+    private function predecessorQuery(int $userId, string|Carbon $date, string|Carbon $createdAt, int $id)
+    {
+        return Transaction::where('user_id', $userId)
+            ->where(function ($q) use ($date, $createdAt, $id) {
+                $q->where('transaction_date', '<', $date)
+                  ->orWhere(function ($q) use ($date, $createdAt, $id) {
+                      $q->where('transaction_date', '=', $date)
+                        ->where(function ($q) use ($createdAt, $id) {
+                            $q->where('created_at', '<', $createdAt)
+                              ->orWhere(function ($q) use ($createdAt, $id) {
+                                  $q->where('created_at', '=', $createdAt)
+                                    ->where('id', '<', $id);
+                              });
+                        });
+                  });
+            })
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
+    }
+
+    /**
+     * Query de transacciones cronológicamente posteriores a una dada.
+     */
+    private function successorQuery(int $userId, string|Carbon $date, string|Carbon $createdAt, int $id)
+    {
+        return Transaction::where('user_id', $userId)
+            ->where(function ($q) use ($date, $createdAt, $id) {
+                $q->where('transaction_date', '>', $date)
+                  ->orWhere(function ($q) use ($date, $createdAt, $id) {
+                      $q->where('transaction_date', '=', $date)
+                        ->where(function ($q) use ($createdAt, $id) {
+                            $q->where('created_at', '>', $createdAt)
+                              ->orWhere(function ($q) use ($createdAt, $id) {
+                                  $q->where('created_at', '=', $createdAt)
+                                    ->where('id', '>', $id);
+                              });
+                        });
+                  });
+            });
+    }
+
     /**
      * Lista movimientos con filtros por búsqueda, tipo y fecha.
      */
@@ -41,16 +88,18 @@ class MovimientoController extends Controller
             $query->whereDate('transaction_date', $date);
         }
 
-        $transactions = $query->orderByDesc('transaction_date')->paginate(10);
+        $transactions = $query->orderByDesc('transaction_date')->orderByDesc('created_at')->paginate(10);
 
         $monthIncome = Transaction::where('user_id', $userId)
             ->where('type', 'credito')
             ->whereMonth('transaction_date', now()->month)
+            ->whereYear('transaction_date', now()->year)
             ->sum('amount');
 
         $monthExpenses = Transaction::where('user_id', $userId)
             ->where('type', 'debito')
             ->whereMonth('transaction_date', now()->month)
+            ->whereYear('transaction_date', now()->year)
             ->sum('amount');
 
         $netBalance = $monthIncome - $monthExpenses;
@@ -61,7 +110,9 @@ class MovimientoController extends Controller
     }
 
     /**
-     * Registra un nuevo movimiento y actualiza el saldo acumulado.
+     * Registra un nuevo movimiento y actualiza el saldo acumulado
+     * usando orden cronológico (transaction_date → created_at → id).
+     * Las transacciones posteriores se incrementan automáticamente.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -76,12 +127,18 @@ class MovimientoController extends Controller
 
         $userId = Auth::id();
 
-        $lastBalance = Transaction::where('user_id', $userId)
+        // El nuevo registro tiene created_at = now(), por lo que siempre es
+        // el último en su misma fecha. El predecesor es el último con
+        // transaction_date <= la nueva fecha.
+        $prevBalance = Transaction::where('user_id', $userId)
+            ->where('transaction_date', '<=', $validated['transaction_date'])
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->value('balance') ?? 0;
 
-        $amount = $validated['type'] === 'credito' ? $validated['amount'] : -$validated['amount'];
-        $newBalance = $lastBalance + $amount;
+        $signedAmount = $validated['type'] === 'credito' ? (float) $validated['amount'] : -(float) $validated['amount'];
+        $newBalance = $prevBalance + $signedAmount;
 
         $transaction = Transaction::create([
             'user_id' => $userId,
@@ -93,6 +150,13 @@ class MovimientoController extends Controller
             'category' => $validated['category'] ?? null,
             'reference' => $validated['reference'] ?? null,
         ]);
+
+        // Incrementar todas las transacciones con fecha posterior
+        if ($signedAmount !== 0.0) {
+            Transaction::where('user_id', $userId)
+                ->where('transaction_date', '>', $validated['transaction_date'])
+                ->increment('balance', $signedAmount);
+        }
 
         AuditLog::create([
             'user_id' => $userId,
@@ -126,7 +190,8 @@ class MovimientoController extends Controller
     }
 
     /**
-     * Actualiza un movimiento y reajusta los saldos de movimientos posteriores.
+     * Actualiza un movimiento y reajusta los saldos de movimientos posteriores
+     * usando orden cronológico (transaction_date → created_at → id).
      */
     public function update(Request $request, Transaction $movimiento): RedirectResponse
     {
@@ -144,16 +209,16 @@ class MovimientoController extends Controller
         $userId = Auth::id();
         $oldValues = $movimiento->toArray();
 
-        $oldSigned = $movimiento->type === 'credito' ? $movimiento->amount : -$movimiento->amount;
-        $newSigned = $validated['type'] === 'credito' ? $validated['amount'] : -$validated['amount'];
+        $oldSigned = $movimiento->type === 'credito' ? (float) $movimiento->amount : -(float) $movimiento->amount;
+        $newSigned = $validated['type'] === 'credito' ? (float) $validated['amount'] : -(float) $validated['amount'];
         $delta = $newSigned - $oldSigned;
 
-        $prevBalance = Transaction::where('user_id', $userId)
-            ->where('id', '<', $movimiento->id)
-            ->orderByDesc('id')
-            ->value('balance') ?? 0;
+        // Predecesor cronológico (transaction_date, created_at, id)
+        $predecessorBalance = $this->predecessorQuery(
+            $userId, $movimiento->transaction_date, $movimiento->created_at, $movimiento->id
+        )->value('balance') ?? 0;
 
-        $newBalance = $prevBalance + $newSigned;
+        $newBalance = $predecessorBalance + $newSigned;
 
         $movimiento->update([
             'description' => $validated['description'],
@@ -166,9 +231,9 @@ class MovimientoController extends Controller
         ]);
 
         if ($delta !== 0.0) {
-            Transaction::where('user_id', $userId)
-                ->where('id', '>', $movimiento->id)
-                ->increment('balance', $delta);
+            $this->successorQuery(
+                $userId, $movimiento->transaction_date, $movimiento->created_at, $movimiento->id
+            )->increment('balance', $delta);
         }
 
         AuditLog::create([
@@ -185,14 +250,17 @@ class MovimientoController extends Controller
     }
 
     /**
-     * Elimina un movimiento y registra la acción en la auditoría.
+     * Elimina un movimiento, recalcula balances posteriores y registra en auditoría.
      */
     public function destroy(Transaction $movimiento): RedirectResponse
     {
         $this->authorize('delete', $movimiento);
 
+        $userId = Auth::id();
+        $signedAmount = $movimiento->type === 'credito' ? (float) $movimiento->amount : -(float) $movimiento->amount;
+
         AuditLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => $userId,
             'action' => 'deleted',
             'entity_type' => 'transaction',
             'entity_id' => $movimiento->id,
@@ -201,6 +269,13 @@ class MovimientoController extends Controller
         ]);
 
         $movimiento->delete();
+
+        // Restar el impacto del movimiento eliminado de todos los posteriores
+        if ($signedAmount !== 0.0) {
+            $this->successorQuery(
+                $userId, $movimiento->transaction_date, $movimiento->created_at, $movimiento->id
+            )->decrement('balance', $signedAmount);
+        }
 
         return redirect()->route('movimientos')->with('success', 'Movimiento eliminado exitosamente.');
     }
