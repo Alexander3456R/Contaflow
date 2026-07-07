@@ -220,6 +220,12 @@
       @yield('content')
     </div>
 
+    <footer class="text-center text-on-surface-variant text-label-md py-4 border-t border-outline-variant mt-8">
+      <p class="font-semibold">ContaFlow</p>
+      <p class="text-on-surface-variant/70 text-[11px]">Contabilidad personal simplificada</p>
+      <p>© {{ date('Y') }} &middot; Diseñado por Christopher Revelo</p>
+    </footer>
+
     <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-outline-variant flex justify-around items-center h-16 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-50">
       <a href="{{ route('dashboard') }}" class="flex flex-col items-center gap-0.5 {{ $isActiveBottom('dashboard') }}">
         <span class="material-symbols-outlined">dashboard</span>

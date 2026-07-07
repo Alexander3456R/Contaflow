@@ -123,6 +123,11 @@
         ¿No tienes una cuenta?&nbsp;<a href="{{ route('register') }}" class="text-primary font-bold hover:underline transition-all">Crear una cuenta</a>
       </p>
     </div>
+    <footer class="mt-12 text-center">
+      <p class="font-label-md text-label-md text-outline uppercase tracking-widest">ContaFlow</p>
+      <p class="font-label-md text-label-md text-outline/60 text-[10px] tracking-normal">Contabilidad personal simplificada</p>
+      <p class="font-body-md text-body-md text-outline">&copy; {{ date('Y') }} &middot; Diseñado por Christopher Revelo</p>
+    </footer>
   </main>
   <script nonce="{{ $cspNonce }}">
   function togglePassword() {
