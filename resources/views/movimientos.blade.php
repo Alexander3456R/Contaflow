@@ -31,7 +31,7 @@
             <span id="dateRangeLabel" class="text-on-surface-variant whitespace-nowrap">Rango de fechas</span>
             <span class="material-symbols-outlined text-sm text-on-surface-variant">expand_more</span>
           </button>
-          <div id="dateRangeDropdown" class="hidden absolute top-full mt-1 left-0 z-30 bg-white border border-outline-variant rounded-xl shadow-xl p-4 min-w-[280px]">
+          <div id="dateRangeDropdown" class="hidden absolute top-full mt-1 left-0 z-30 bg-white border border-outline-variant rounded-xl shadow-xl p-4 min-w-[260px] sm:min-w-[300px]">
             <div class="flex flex-col sm:flex-row gap-3">
               <div class="flex-1">
                 <label class="block text-xs font-bold text-on-surface-variant mb-1">Desde</label>
@@ -118,15 +118,36 @@
     {{-- Paginación de la tabla de transacciones --}}
     <div class="bg-surface-container-low px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-outline-variant">
       <p class="text-sm text-on-surface-variant">Mostrando <span class="font-bold">{{ $transactions->firstItem() ?? 0 }}-{{ $transactions->lastItem() ?? 0 }}</span> de <span class="font-bold">{{ $transactions->total() }}</span> movimientos</p>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center justify-center gap-1.5">
         @if($transactions->onFirstPage())
         <button class="p-2 rounded-lg border border-outline-variant bg-white opacity-50 cursor-not-allowed"><span class="material-symbols-outlined">chevron_left</span></button>
         @else
         <a href="{{ $transactions->previousPageUrl() }}" class="p-2 rounded-lg border border-outline-variant bg-white hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined">chevron_left</span></a>
         @endif
-        @foreach($transactions->getUrlRange(1, $transactions->lastPage()) as $page => $url)
-        <a href="{{ $url }}" class="px-3 py-1 rounded-lg {{ $page == $transactions->currentPage() ? 'bg-primary text-white font-bold' : 'hover:bg-surface-container-high' }} text-sm transition-colors">{{ $page }}</a>
-        @endforeach
+        @php
+          $currentPage = $transactions->currentPage();
+          $lastPage = $transactions->lastPage();
+          $pagesToShow = [];
+          if ($lastPage <= 7) {
+            $pagesToShow = range(1, $lastPage);
+          } else {
+            $pagesToShow[] = 1;
+            for ($i = max(2, $currentPage - 1); $i <= min($lastPage - 1, $currentPage + 1); $i++) {
+              $pagesToShow[] = $i;
+            }
+            $pagesToShow[] = $lastPage;
+            $pagesToShow = array_values(array_unique($pagesToShow));
+            sort($pagesToShow);
+          }
+        @endphp
+        @if($lastPage > 1)
+          @foreach($pagesToShow as $idx => $page)
+            @if($idx > 0 && $page - $pagesToShow[$idx - 1] > 1)
+              <span class="px-3 py-1 text-on-surface-variant font-bold">...</span>
+            @endif
+            <a href="{{ $transactions->url($page) }}" class="px-3 py-1 rounded-lg {{ $page == $currentPage ? 'bg-primary text-white font-bold' : 'hover:bg-surface-container-high' }} text-sm transition-colors">{{ $page }}</a>
+          @endforeach
+        @endif
         @if($transactions->hasMorePages())
         <a href="{{ $transactions->nextPageUrl() }}" class="p-2 rounded-lg border border-outline-variant bg-white hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined">chevron_right</span></a>
         @else
