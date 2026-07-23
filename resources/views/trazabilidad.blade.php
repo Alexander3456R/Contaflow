@@ -23,7 +23,7 @@
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
           <input name="search" value="{{ request('search') }}" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none text-body-md" placeholder="Buscar por acción, descripción, ID o usuario..." type="text"/>
         </div>
-        <div class="flex gap-4 w-full lg:w-auto">
+        <div class="flex flex-wrap gap-4 w-full lg:w-auto">
           <div class="relative" id="dateRangeWrapper">
             <input type="hidden" name="from" id="fromHidden" value="{{ request('from') }}">
             <input type="hidden" name="to" id="toHidden" value="{{ request('to') }}">
@@ -32,7 +32,7 @@
               <span id="dateRangeLabel" class="text-on-surface-variant whitespace-nowrap">Rango de fechas</span>
               <span class="material-symbols-outlined text-sm text-on-surface-variant">expand_more</span>
             </button>
-            <div id="dateRangeDropdown" class="hidden absolute top-full mt-1 right-0 z-30 bg-white border border-outline-variant rounded-xl shadow-xl p-4 min-w-[280px]">
+            <div id="dateRangeDropdown" class="hidden absolute top-full mt-1 right-0 z-30 bg-white border border-outline-variant rounded-xl shadow-xl p-4 min-w-[260px] sm:min-w-[300px]">
               <div class="flex flex-col sm:flex-row gap-3">
                 <div class="flex-1">
                   <label class="block text-xs font-bold text-on-surface-variant mb-1">Desde</label>
@@ -96,7 +96,7 @@
             <div class="p-4 bg-white rounded-lg border border-outline-variant"><span class="text-label-md text-outline uppercase block mb-1">ID Eliminado</span><p class="text-body-md text-on-surface font-mono">{{ $log->entity_id }}</p></div>
           </div>
         @elseif($oldValues && $newValues)
-          <div class="mt-6 bg-white rounded-lg p-4 border border-outline-variant overflow-x-auto">
+          <div class="mt-6 bg-white rounded-lg p-4 border border-outline-variant overflow-x-auto max-w-full">
             <table class="w-full text-left border-collapse">
               <thead><tr class="border-b border-outline-variant bg-surface-container-lowest"><th class="py-2 px-3 font-label-md text-label-md text-outline uppercase tracking-wider">Campo</th><th class="py-2 px-3 font-label-md text-label-md text-outline uppercase tracking-wider">Antes</th><th class="py-2 px-3 font-label-md text-label-md text-outline uppercase tracking-wider">Después</th></tr></thead>
               <tbody class="text-body-md">
@@ -119,24 +119,45 @@
       @endforelse
     </div>
 
-    <div class="flex items-center justify-between">
-      <span class="text-label-md text-outline">Mostrando {{ $logs->firstItem() }}-{{ $logs->lastItem() }} de {{ $logs->total() }} registros</span>
-      <div class="flex gap-2">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <span class="text-label-md text-outline text-center sm:text-left">Mostrando {{ $logs->firstItem() }}-{{ $logs->lastItem() }} de {{ $logs->total() }} registros</span>
+      <div class="flex flex-wrap items-center justify-center gap-1.5">
         @if($logs->onFirstPage())
-          <button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-lg opacity-50 cursor-not-allowed"><span class="material-symbols-outlined">chevron_left</span></button>
+          <span class="w-9 h-9 flex items-center justify-center border border-outline-variant rounded-lg opacity-50 cursor-not-allowed"><span class="material-symbols-outlined text-[18px]">chevron_left</span></span>
         @else
-          <a href="{{ $logs->previousPageUrl() }}" class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chevron_left</span></a>
+          <a href="{{ $logs->previousPageUrl() }}" class="w-9 h-9 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[18px]">chevron_left</span></a>
         @endif
-        @for($i = 1; $i <= $logs->lastPage(); $i++)
-          <a href="{{ $logs->url($i) }}" class="w-10 h-10 flex items-center justify-center rounded-lg font-bold transition-colors {{ $logs->currentPage() === $i ? 'bg-primary text-on-primary' : 'border border-outline-variant hover:bg-surface-container-low' }}">{{ $i }}</a>
-        @endfor
+        @php
+          $currentPage = $logs->currentPage();
+          $lastPage = $logs->lastPage();
+          $pagesToShow = [];
+          if ($lastPage <= 7) {
+            $pagesToShow = range(1, $lastPage);
+          } else {
+            $pagesToShow[] = 1;
+            for ($i = max(2, $currentPage - 1); $i <= min($lastPage - 1, $currentPage + 1); $i++) {
+              $pagesToShow[] = $i;
+            }
+            $pagesToShow[] = $lastPage;
+            $pagesToShow = array_values(array_unique($pagesToShow));
+            sort($pagesToShow);
+          }
+        @endphp
+        @if($lastPage > 1)
+          @foreach($pagesToShow as $idx => $page)
+            @if($idx > 0 && $page - $pagesToShow[$idx - 1] > 1)
+              <span class="w-9 h-9 flex items-center justify-center text-on-surface-variant font-bold">...</span>
+            @endif
+            <a href="{{ $logs->url($page) }}" class="w-9 h-9 flex items-center justify-center rounded-lg font-bold text-sm transition-colors {{ $currentPage === $page ? 'bg-primary text-on-primary' : 'border border-outline-variant hover:bg-surface-container-low' }}">{{ $page }}</a>
+          @endforeach
+        @endif
         @if($logs->hasMorePages())
-          <a href="{{ $logs->nextPageUrl() }}" class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chevron_right</span></a>
+          <a href="{{ $logs->nextPageUrl() }}" class="w-9 h-9 flex items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[18px]">chevron_right</span></a>
         @else
-          <button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-lg opacity-50 cursor-not-allowed"><span class="material-symbols-outlined">chevron_right</span></button>
+          <span class="w-9 h-9 flex items-center justify-center border border-outline-variant rounded-lg opacity-50 cursor-not-allowed"><span class="material-symbols-outlined text-[18px]">chevron_right</span></span>
         @endif
       </div>
-      </div>
+    </div>
     </div>
   @endsection
 
