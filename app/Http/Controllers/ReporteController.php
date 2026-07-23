@@ -159,6 +159,10 @@ class ReporteController extends Controller
             ->orderByDesc('total')
             ->get();
 
+        $transactions = Transaction::where('user_id', $userId)
+            ->orderBy('transaction_date', 'desc')
+            ->get();
+
         $meses = [
             '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo',
             '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio',
@@ -245,6 +249,47 @@ class ReporteController extends Controller
             ->withFontBold(true)->withFontSize(11)
             ->withFontName('Calibri');
 
+        $styleTransRow = (new Style())
+            ->withFontSize(10)->withFontName('Calibri');
+
+        $styleTransRowAlt = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')
+            ->withBackgroundColor($lightGrayBg);
+
+        $styleTransDate = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')->withFormat('DD/MM/YYYY');
+
+        $styleTransDateAlt = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')->withFormat('DD/MM/YYYY')
+            ->withBackgroundColor($lightGrayBg);
+
+        $styleTransTypeCredito = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')
+            ->withFontColor($green);
+
+        $styleTransTypeCreditoAlt = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')
+            ->withFontColor($green)
+            ->withBackgroundColor($lightGrayBg);
+
+        $styleTransTypeDebito = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')
+            ->withFontColor($red);
+
+        $styleTransTypeDebitoAlt = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')
+            ->withFontColor($red)
+            ->withBackgroundColor($lightGrayBg);
+
+        $styleTransAmount = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')
+            ->withFormat('#,##0.00')->withCellAlignment(CellAlignment::RIGHT);
+
+        $styleTransAmountAlt = (new Style())
+            ->withFontSize(10)->withFontName('Calibri')
+            ->withFormat('#,##0.00')->withCellAlignment(CellAlignment::RIGHT)
+            ->withBackgroundColor($lightGrayBg);
+
         $path = tempnam(sys_get_temp_dir(), 'reporte') . '.xlsx';
 
         $options = new Options();
@@ -252,6 +297,8 @@ class ReporteController extends Controller
         $options->setColumnWidth(42, 2);
         $options->setColumnWidth(22, 3);
         $options->setColumnWidth(22, 4);
+        $options->setColumnWidth(14, 5);
+        $options->setColumnWidth(22, 6);
 
         $writer = new Writer($options);
         $writer->openToFile($path);
@@ -259,6 +306,7 @@ class ReporteController extends Controller
 
         $headerColumns = [0 => $styleTableHeader, 1 => $styleTableHeader];
         $headerColumnsFlujo = [0 => $styleTableHeader, 1 => $styleTableHeader, 2 => $styleTableHeader, 3 => $styleTableHeader];
+        $headerColumnsTrans = [0 => $styleTableHeader, 1 => $styleTableHeader, 2 => $styleTableHeader, 3 => $styleTableHeader, 4 => $styleTableHeader, 5 => $styleTableHeader];
 
         $writer->addRow(Row::fromValuesWithStyle(
             ['Reporte Financiero — ContaFlow'],
@@ -376,6 +424,60 @@ class ReporteController extends Controller
         $writer->addRow(Row::fromValuesWithStyles(
             ['TOTAL', $totalCategoryExpenses],
             [0 => $styleTotalLabel, 1 => $styleTotalValue]
+        ));
+
+        // ==============================
+        //  HISTORIAL DE TRANSACCIONES
+        // ==============================
+        $writer->addRow(Row::fromValues([]));
+        $writer->addRow(Row::fromValuesWithStyle(
+            ['Historial de Transacciones'],
+            $styleSection
+        ));
+        $writer->addRow(Row::fromValuesWithStyles(
+            ['Fecha', 'Descripción', 'Tipo', 'Monto', 'Categoría', 'Referencia'],
+            $headerColumnsTrans
+        ));
+
+        $totalTransAmount = 0.0;
+        foreach ($transactions as $i => $t) {
+            $isAlt = $i % 2 === 1;
+            $amount = (float) $t->amount;
+            $totalTransAmount += $amount;
+            $typeLabel = $t->type === 'credito' ? 'Crédito' : 'Débito';
+
+            $writer->addRow(Row::fromValuesWithStyles(
+                [
+                    $t->transaction_date->format('d/m/Y'),
+                    $t->description,
+                    $typeLabel,
+                    $t->type === 'credito' ? $amount : -$amount,
+                    $t->category ?? '—',
+                    $t->reference ?? '—',
+                ],
+                [
+                    0 => $isAlt ? $styleTransDateAlt : $styleTransDate,
+                    1 => $isAlt ? $styleTransRowAlt : $styleTransRow,
+                    2 => $t->type === 'credito'
+                        ? ($isAlt ? $styleTransTypeCreditoAlt : $styleTransTypeCredito)
+                        : ($isAlt ? $styleTransTypeDebitoAlt : $styleTransTypeDebito),
+                    3 => $isAlt ? $styleTransAmountAlt : $styleTransAmount,
+                    4 => $isAlt ? $styleTransRowAlt : $styleTransRow,
+                    5 => $isAlt ? $styleTransRowAlt : $styleTransRow,
+                ]
+            ));
+        }
+
+        $writer->addRow(Row::fromValuesWithStyles(
+            ['', count($transactions) . ' movimientos', '', $totalTransAmount, '', ''],
+            [
+                0 => $styleTotalLabel,
+                1 => $styleTotalLabel,
+                2 => $styleTotalLabel,
+                3 => $styleTotalValue,
+                4 => $styleTotalLabel,
+                5 => $styleTotalLabel,
+            ]
         ));
 
         $writer->close();
