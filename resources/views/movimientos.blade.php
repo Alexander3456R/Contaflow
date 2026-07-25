@@ -186,32 +186,32 @@
       @csrf
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Descripción</label>
-        <input name="description" required class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Descripción del movimiento">
+        <input name="description" required class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Descripción del movimiento">
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Tipo</label>
-          <select name="type" required class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+          <select name="type" required class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
             <option value="credito">Crédito</option>
             <option value="debito">Débito</option>
           </select>
         </div>
         <div>
           <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Monto</label>
-          <input name="amount" type="number" step="0.01" min="0.01" required class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="0.00">
+          <input name="amount" type="number" step="0.01" min="0.01" required class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="0.00">
         </div>
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Fecha</label>
-        <input name="transaction_date" type="date" required value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+        <input name="transaction_date" type="date" required value="{{ date('Y-m-d') }}" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Categoría</label>
-        <input name="category" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Ej: Gastos, Prestamo, Regalo, Sueldo, etc.">
+        <input name="category" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Ej: Gastos, Prestamo, Regalo, Sueldo, etc.">
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Referencia</label>
-        <input name="reference" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Factura #, ticket, etc.">
+        <input name="reference" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Factura #, ticket, etc.">
       </div>
       <div class="flex gap-3 pt-2">
         <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-bold hover:opacity-90 transition-all">Guardar Movimiento</button>
@@ -233,32 +233,32 @@
       @method('PUT')
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Descripción</label>
-        <input name="description" id="edit_description" required class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Descripción del movimiento">
+        <input name="description" id="edit_description" required class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Descripción del movimiento">
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Tipo</label>
-          <select name="type" id="edit_type" required class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+          <select name="type" id="edit_type" required class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
             <option value="credito">Crédito</option>
             <option value="debito">Débito</option>
           </select>
         </div>
         <div>
           <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Monto</label>
-          <input name="amount" id="edit_amount" type="number" step="0.01" min="0.01" required class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="0.00">
+          <input name="amount" id="edit_amount" type="number" step="0.01" min="0.01" required class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="0.00">
         </div>
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Fecha</label>
-        <input name="transaction_date" id="edit_transaction_date" type="date" required class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+        <input name="transaction_date" id="edit_transaction_date" type="date" required class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Categoría</label>
-        <input name="category" id="edit_category" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Ej: Gastos, Prestamo, Regalo, Sueldo, etc.">
+        <input name="category" id="edit_category" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Ej: Gastos, Prestamo, Regalo, Sueldo, etc.">
       </div>
       <div>
         <label class="font-label-md text-label-md text-on-surface-variant uppercase block mb-1">Referencia</label>
-        <input name="reference" id="edit_reference" class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Factura #, ticket, etc.">
+        <input name="reference" id="edit_reference" class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Factura #, ticket, etc.">
       </div>
       <div class="flex gap-3 pt-2">
         <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-bold hover:opacity-90 transition-all">Actualizar Movimiento</button>

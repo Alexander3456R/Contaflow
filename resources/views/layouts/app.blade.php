@@ -68,9 +68,12 @@
   html.dark .text-on-surface { color: #e3e5ea; }
   html.dark .text-on-surface-variant { color: #b0b5c4; }
   html.dark .text-outline { color: #8a90a0; }
+  html.dark input::placeholder,
+  html.dark textarea::placeholder { color: #9ca3af; opacity: 1; }
   html.dark .border-outline-variant { border-color: #323846; }
   html.dark .border-slate-200 { border-color: #323846; }
   html.dark .bg-white { background-color: #1a1d27; }
+  html.dark .bg-surface { background-color: #1a1d27; }
   html.dark .bg-white\/80 { background-color: rgba(26, 29, 39, 0.85); }
   html.dark .bg-black\/50 { background-color: rgba(0, 0, 0, 0.7); }
   html.dark .divide-outline-variant > * { border-color: #323846; }
