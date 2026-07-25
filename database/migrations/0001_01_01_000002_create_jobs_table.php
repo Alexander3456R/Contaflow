@@ -1,14 +1,20 @@
 <?php
 
+/**
+ * Migración: Creación de tabla jobs.
+ *
+ * Crea las tablas jobs (cola de trabajos), job_batches (lotes de
+ * trabajos) y failed_jobs (trabajos fallidos) para el sistema
+ * de colas de Laravel.
+ */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    /** Ejecuta la migración */
     public function up(): void
     {
         Schema::create('jobs', function (Blueprint $table) {
@@ -47,9 +53,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    /** Revierte la migración */
     public function down(): void
     {
         Schema::dropIfExists('jobs');

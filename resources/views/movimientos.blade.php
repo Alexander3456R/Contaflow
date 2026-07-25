@@ -1,3 +1,4 @@
+<!-- Vista: Movimientos — Listado paginado de transacciones con filtros de búsqueda, tipo y fechas. Modal para crear/editar. -->
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Movimientos')

@@ -1,14 +1,19 @@
 <?php
 
+/**
+ * Migración: Creación de tabla users.
+ *
+ * Crea las tablas users (usuarios), password_reset_tokens (tokens de
+ * reseteo de contraseña) y sessions (sesiones de usuario).
+ */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    /** Ejecuta la migración */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -37,9 +42,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    /** Revierte la migración */
     public function down(): void
     {
         Schema::dropIfExists('users');

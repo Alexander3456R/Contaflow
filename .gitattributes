@@ -1,3 +1,4 @@
+# .gitattributes — Configuración de atributos Git para normalización de archivos.
 * text=auto eol=lf
 
 *.blade.php diff=html

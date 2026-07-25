@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Controlador de reportes financieros.
+ *
+ * Genera resúmenes financieros, gastos por categoría, flujo mensual,
+ * datos para gráficos por rango de fechas y exportación a XLSX.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
@@ -317,9 +324,6 @@ class ReporteController extends Controller
             $styleSubtitle
         ));
 
-        // ==============================
-        //  RESUMEN EJECUTIVO
-        // ==============================
         $writer->addRow(Row::fromValues([]));
         $writer->addRow(Row::fromValuesWithStyle(
             ['Resumen Ejecutivo'],
@@ -343,9 +347,6 @@ class ReporteController extends Controller
             ));
         }
 
-        // ==============================
-        //  FLUJO DE CAJA MENSUAL
-        // ==============================
         $writer->addRow(Row::fromValues([]));
         $writer->addRow(Row::fromValuesWithStyle(
             ['Flujo de Caja Mensual'],
@@ -394,9 +395,6 @@ class ReporteController extends Controller
             ]
         ));
 
-        // ==============================
-        //  GASTOS POR CATEGORÍA
-        // ==============================
         $writer->addRow(Row::fromValues([]));
         $writer->addRow(Row::fromValuesWithStyle(
             ['Gastos por Categoría'],
@@ -426,9 +424,6 @@ class ReporteController extends Controller
             [0 => $styleTotalLabel, 1 => $styleTotalValue]
         ));
 
-        // ==============================
-        //  HISTORIAL DE TRANSACCIONES
-        // ==============================
         $writer->addRow(Row::fromValues([]));
         $writer->addRow(Row::fromValuesWithStyle(
             ['Historial de Transacciones'],

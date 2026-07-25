@@ -1,3 +1,4 @@
+<!-- Vista: Security Questions — Muestra las preguntas de seguridad del usuario para verificar su identidad antes de restablecer la contraseña. -->
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>

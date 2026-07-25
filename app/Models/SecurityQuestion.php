@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Modelo: Pregunta de seguridad.
+ *
+ * Representa una pregunta de seguridad utilizada en el flujo de
+ * recuperación de contraseña basado en preguntas/respuestas.
+ */
+
 declare(strict_types=1);
 
 namespace App\Models;

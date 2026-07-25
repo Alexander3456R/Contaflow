@@ -1,17 +1,23 @@
 <?php
 
+/**
+ * Configuración de caché.
+ *
+ * Define el almacén de caché por defecto, los almacenes disponibles,
+ * el prefijo de claves y las clases serializables.
+ */
+
 use Illuminate\Support\Str;
 
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Cache Store
+    | Almacén de caché por defecto
     |--------------------------------------------------------------------------
     |
-    | This option controls the default cache store that will be used by the
-    | framework. This connection is utilized if another isn't explicitly
-    | specified when running a cache operation inside the application.
+    | Controla el almacén de caché usado por el framework cuando no se
+    | especifica otro explícitamente.
     |
     */
 
@@ -19,16 +25,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Stores
+    | Almacenes de caché
     |--------------------------------------------------------------------------
     |
-    | Here you may define all of the cache "stores" for your application as
-    | well as their drivers. You may even define multiple stores for the
-    | same cache driver to group types of items stored in your caches.
+    | Define todos los almacenes de caché de la aplicación. Puedes definir
+    | múltiples almacenes para el mismo driver y agrupar tipos de ítems.
     |
-    | Supported drivers: "array", "database", "file", "memcached",
-    |                    "redis", "dynamodb", "storage", "octane",
-    |                    "session", "failover", "null"
+    | Drivers soportados: "array", "database", "file", "memcached",
+    |                     "redis", "dynamodb", "storage", "octane",
+    |                     "session", "failover", "null"
     |
     */
 
@@ -109,25 +114,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Key Prefix
+    | Prefijo de claves de caché
     |--------------------------------------------------------------------------
     |
-    | When utilizing the APC, database, memcached, Redis, and DynamoDB cache
-    | stores, there might be other applications using the same cache. For
-    | that reason, you may prefix every cache key to avoid collisions.
+    | Al usar APC, database, memcached, Redis o DynamoDB, pueden existir
+    | otras aplicaciones usando la misma caché. Este prefijo evita
+    | colisiones.
     |
     */
 
-    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
+    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')) . '-cache-'),
 
     /*
     |--------------------------------------------------------------------------
-    | Serializable Classes
+    | Clases serializables
     |--------------------------------------------------------------------------
     |
-    | This value determines the classes that can be unserialized from cache
-    | storage. By default, no PHP classes will be unserialized from your
-    | cache to prevent gadget chain attacks if your APP_KEY is leaked.
+    | Determina qué clases pueden ser deserializadas desde el almacenamiento
+    | de caché. Por defecto ninguna, para prevenir ataques de gadget chain
+    | si la APP_KEY se ve comprometida.
     |
     */
 

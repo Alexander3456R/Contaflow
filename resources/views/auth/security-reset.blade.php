@@ -1,3 +1,4 @@
+<!-- Vista: Security Reset — Formulario para ingresar la nueva contraseña después de verificar las preguntas de seguridad. -->
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>

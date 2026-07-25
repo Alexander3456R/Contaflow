@@ -1,14 +1,20 @@
 <?php
 
+/**
+ * Migración: Creación de tabla transactions.
+ *
+ * Crea la tabla de transacciones financieras con tipo (credito/debito),
+ * monto, saldo acumulado, fecha, categoría y referencia. Relacionada
+ * con users mediante clave foránea.
+ */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    /** Ejecuta la migración */
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
@@ -25,9 +31,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    /** Revierte la migración */
     public function down(): void
     {
         Schema::dropIfExists('transactions');

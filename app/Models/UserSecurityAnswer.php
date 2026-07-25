@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Modelo: Respuesta de seguridad del usuario.
+ *
+ * Almacena la respuesta cifrada de un usuario a una pregunta de
+ * seguridad, utilizada para la recuperación de contraseña.
+ */
+
 declare(strict_types=1);
 
 namespace App\Models;

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Controlador de perfil de usuario.
+ *
+ * Permite al usuario autenticado ver y actualizar su perfil (nombre,
+ * email), cambiar su contraseña y gestionar sus preguntas de seguridad.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;

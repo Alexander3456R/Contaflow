@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Definición de rutas web.
+ *
+ * Define las rutas públicas (login, registro, recuperación de
+ * contraseña) y las rutas protegidas (dashboard, movimientos,
+ * reportes, perfil, trazabilidad, notificaciones).
+ */
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SecurityResetController;
@@ -10,7 +18,7 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TrazabilidadController;
 use Illuminate\Support\Facades\Route;
 
-// Rutas para usuarios no autenticados: inicio de sesión, registro y restablecimiento de contraseña
+// Rutas para usuarios no autenticados
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:login');
@@ -24,7 +32,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [SecurityResetController::class, 'updatePassword'])->middleware('throttle:password-reset')->name('password.update');
 });
 
-// Rutas para usuarios autenticados: dashboard, movimientos, reportes, perfil, trazabilidad y notificaciones
+// Rutas para usuarios autenticados
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->middleware('throttle:perfil')->name('logout');
 
@@ -55,5 +63,5 @@ Route::middleware('auth')->group(function () {
     })->middleware('throttle:notificaciones')->name('notificaciones.leer');
 });
 
-// Redirige la raíz al dashboard para usuarios autenticados
-Route::get('/', fn () => redirect()->route('dashboard'));
+// Redirige la raíz al dashboard
+Route::get('/', fn() => redirect()->route('dashboard'));

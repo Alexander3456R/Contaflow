@@ -1,17 +1,23 @@
 <?php
 
+/**
+ * Seeder principal de la base de datos.
+ *
+ * Orquesta la siembra de datos en orden: primero preguntas de seguridad,
+ * luego usuarios, transacciones y finalmente registros de auditoría.
+ */
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
+/** Ejecuta todos los seeders en orden de dependencia */
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Orden de siembra: primero preguntas de seguridad (dependencia de usuarios),
-        // luego usuarios, transacciones y finalmente bitácora de auditoría
         $this->call([
             SecurityQuestionSeeder::class,
             UserSeeder::class,

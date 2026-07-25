@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Tests de trazabilidad.
+ *
+ * Verifica que los usuarios no autenticados sean redirigidos y que
+ * los usuarios autenticados puedan ver el registro de auditoría.
+ */
+
 namespace Tests\Feature;
 
 use App\Models\AuditLog;
@@ -7,6 +14,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/** Pruebas del registro de auditoría */
 class TrazabilidadTest extends TestCase
 {
     use RefreshDatabase;

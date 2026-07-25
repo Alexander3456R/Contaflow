@@ -1,11 +1,19 @@
 <?php
 
+/**
+ * Tests del dashboard.
+ *
+ * Verifica que los usuarios no autenticados sean redirigidos y que
+ * los usuarios autenticados vean el panel con saldo e ingresos.
+ */
+
 namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/** Pruebas del panel principal */
 class DashboardTest extends TestCase
 {
     use RefreshDatabase;

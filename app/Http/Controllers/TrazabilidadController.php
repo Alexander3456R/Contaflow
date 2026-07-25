@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Controlador de trazabilidad.
+ *
+ * Permite al usuario consultar el registro de auditoría de todas las
+ * acciones realizadas en el sistema, con filtros de búsqueda y fecha.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;

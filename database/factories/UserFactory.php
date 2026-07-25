@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Fábrica: UserFactory.
+ *
+ * Genera datos de prueba para el modelo User con nombre, email,
+ * contraseña y token de recuerdo aleatorios.
+ */
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -9,21 +16,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends Factory<User>
- */
+/** @extends Factory<User> */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
+    /** Contraseña actual usada por la fábrica */
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    /** Define el estado por defecto del modelo */
     public function definition(): array
     {
         return [
@@ -35,12 +34,10 @@ class UserFactory extends Factory
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
+    /** Indica que el email del modelo no debe verificarse */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

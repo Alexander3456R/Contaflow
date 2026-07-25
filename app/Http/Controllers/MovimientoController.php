@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Controlador de movimientos financieros.
+ *
+ * CRUD completo de transacciones (ingresos y egresos) con filtros,
+ * recálculo automático de saldo corriente en orden cronológico
+ * (transaction_date → created_at → id) y registro de auditoría.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
@@ -130,9 +138,6 @@ class MovimientoController extends Controller
 
         $userId = Auth::id();
 
-        // El nuevo registro tiene created_at = now(), por lo que siempre es
-        // el último en su misma fecha. El predecesor es el último con
-        // transaction_date <= la nueva fecha.
         $prevBalance = Transaction::where('user_id', $userId)
             ->where('transaction_date', '<=', $validated['transaction_date'])
             ->orderByDesc('transaction_date')
@@ -154,7 +159,6 @@ class MovimientoController extends Controller
             'reference' => $validated['reference'] ?? null,
         ]);
 
-        // Incrementar todas las transacciones con fecha posterior
         if ($signedAmount !== 0.0) {
             Transaction::where('user_id', $userId)
                 ->where('transaction_date', '>', $validated['transaction_date'])
@@ -212,27 +216,23 @@ class MovimientoController extends Controller
         $userId = Auth::id();
         $oldValues = $movimiento->toArray();
 
-        // Guardar posición original ANTES del update (necesario si cambia la fecha)
         $oldDate = $movimiento->transaction_date;
         $oldCreatedAt = $movimiento->created_at;
         $oldId = $movimiento->id;
         $oldSigned = $movimiento->type === 'credito' ? (float) $movimiento->amount : -(float) $movimiento->amount;
         $newSigned = $validated['type'] === 'credito' ? (float) $validated['amount'] : -(float) $validated['amount'];
 
-        // Predecesor cronológico usando la posición original
         $predecessorBalance = $this->predecessorQuery(
             $userId, $oldDate, $oldCreatedAt, $oldId
         )->value('balance') ?? 0;
 
         $newBalance = $predecessorBalance + $newSigned;
 
-        // 1. Remover efecto viejo de todos los sucesores de la posición original
         if ($oldSigned !== 0.0) {
             $this->successorQuery($userId, $oldDate, $oldCreatedAt, $oldId)
                 ->decrement('balance', $oldSigned);
         }
 
-        // 2. Actualizar la transacción (incluyendo nueva fecha si cambió)
         $movimiento->update([
             'description' => $validated['description'],
             'type' => $validated['type'],
@@ -243,7 +243,6 @@ class MovimientoController extends Controller
             'reference' => $validated['reference'] ?? null,
         ]);
 
-        // 3. Aplicar efecto nuevo a todos los sucesores de la nueva posición
         if ($newSigned !== 0.0) {
             $this->successorQuery(
                 $userId, $movimiento->transaction_date, $movimiento->created_at, $movimiento->id
@@ -284,7 +283,6 @@ class MovimientoController extends Controller
 
         $movimiento->delete();
 
-        // Restar el impacto del movimiento eliminado de todos los posteriores
         if ($signedAmount !== 0.0) {
             $this->successorQuery(
                 $userId, $movimiento->transaction_date, $movimiento->created_at, $movimiento->id

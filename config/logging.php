@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Configuración de logging.
+ *
+ * Define el canal de log por defecto, el canal para deprecaciones y
+ * todos los canales de logging disponibles usando Monolog.
+ */
+
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -9,12 +16,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Log Channel
+    | Canal de log por defecto
     |--------------------------------------------------------------------------
     |
-    | This option defines the default log channel that is utilized to write
-    | messages to your logs. The value provided here should match one of
-    | the channels present in the list of "channels" configured below.
+    | Define el canal que se utiliza para escribir mensajes de log.
+    | Debe coincidir con uno de los canales configurados abajo.
     |
     */
 
@@ -22,12 +28,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Deprecations Log Channel
+    | Canal de deprecaciones
     |--------------------------------------------------------------------------
     |
-    | This option controls the log channel that should be used to log warnings
-    | regarding deprecated PHP and library features. This allows you to get
-    | your application ready for upcoming major versions of dependencies.
+    | Controla el canal usado para registrar advertencias sobre
+    | funcionalidades obsoletas de PHP y librerías.
     |
     */
 
@@ -38,15 +43,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Log Channels
+    | Canales de log
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the log channels for your application. Laravel
-    | utilizes the Monolog PHP logging library, which includes a variety
-    | of powerful log handlers and formatters that you're free to use.
+    | Configura los canales de log. Laravel utiliza la librería Monolog,
+    | que incluye diversos handlers y formateadores.
     |
-    | Available drivers: "single", "daily", "slack", "syslog",
-    |                    "errorlog", "monolog", "custom", "stack"
+    | Drivers disponibles: "single", "daily", "slack", "syslog",
+    |                      "errorlog", "monolog", "custom", "stack"
     |
     */
 
@@ -89,7 +93,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Modelo: Transacción financiera.
+ *
+ * Representa un movimiento de ingresos o gastos asociado a un usuario,
+ * con su tipo (crédito/débito), monto, saldo resultante, categoría
+ * y fecha de la transacción.
+ */
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -18,6 +26,7 @@ class Transaction extends Model
         'balance', 'transaction_date', 'category', 'reference',
     ];
 
+    /** Define los casts de los atributos */
     protected function casts(): array
     {
         return [

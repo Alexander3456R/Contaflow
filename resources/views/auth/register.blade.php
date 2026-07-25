@@ -1,3 +1,4 @@
+<!-- Vista: Register — Formulario de registro con datos personales, contraseña y selección de 3 preguntas de seguridad. -->
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>

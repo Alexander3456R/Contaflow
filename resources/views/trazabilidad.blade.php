@@ -1,3 +1,4 @@
+<!-- Vista: Trazabilidad — Registro de auditoría con filtros de búsqueda y fecha. Muestra acciones del usuario sobre entidades. -->
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Trazabilidad')

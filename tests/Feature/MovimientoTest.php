@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Tests de movimientos financieros.
+ *
+ * Verifica el CRUD de transacciones: listado, creación, validación,
+ * edición, eliminación y permisos entre usuarios.
+ */
+
 namespace Tests\Feature;
 
 use App\Models\Transaction;
@@ -7,6 +14,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/** Pruebas del CRUD de movimientos */
 class MovimientoTest extends TestCase
 {
     use RefreshDatabase;

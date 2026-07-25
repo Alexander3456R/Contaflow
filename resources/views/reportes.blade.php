@@ -1,3 +1,4 @@
+<!-- Vista: Reportes — Análisis financiero con resumen, gastos por categoría, flujo mensual, gráficos y exportación a XLSX. -->
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Reportes')

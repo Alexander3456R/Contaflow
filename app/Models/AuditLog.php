@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Modelo: Registro de auditoría.
+ *
+ * Almacena un registro de todas las acciones realizadas por los usuarios
+ * sobre las entidades del sistema (transacciones, perfil, etc.), incluyendo
+ * los valores anteriores y nuevos para trazabilidad.
+ */
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -18,6 +26,7 @@ class AuditLog extends Model
         'description', 'old_values', 'new_values',
     ];
 
+    /** Define los casts de los atributos */
     protected function casts(): array
     {
         return [

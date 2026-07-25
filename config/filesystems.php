@@ -1,15 +1,21 @@
 <?php
 
+/**
+ * Configuración de sistemas de archivos.
+ *
+ * Define el disco por defecto, los discos disponibles (local, público,
+ * S3) y los enlaces simbólicos.
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Filesystem Disk
+    | Disco por defecto
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default filesystem disk that should be used
-    | by the framework. The "local" disk, as well as a variety of cloud
-    | based disks are available to your application for file storage.
+    | Especifica el disco de sistema de archivos usado por el framework
+    | cuando no se especifica otro.
     |
     */
 
@@ -17,14 +23,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Filesystem Disks
+    | Discos de sistema de archivos
     |--------------------------------------------------------------------------
     |
-    | Below you may configure as many filesystem disks as necessary, and you
-    | may even configure multiple disks for the same driver. Examples for
-    | most supported storage drivers are configured here for reference.
+    | Configura los discos disponibles. Puedes configurar múltiples discos
+    | para el mismo driver.
     |
-    | Supported drivers: "local", "ftp", "sftp", "s3"
+    | Drivers soportados: "local", "ftp", "sftp", "s3"
     |
     */
 
@@ -41,7 +46,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/') . '/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -64,12 +69,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Symbolic Links
+    | Enlaces simbólicos
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the symbolic links that will be created when the
-    | `storage:link` Artisan command is executed. The array keys should be
-    | the locations of the links and the values should be their targets.
+    | Configura los enlaces simbólicos creados al ejecutar el comando
+    | `storage:link` de Artisan.
     |
     */
 

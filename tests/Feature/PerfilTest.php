@@ -1,11 +1,19 @@
 <?php
 
+/**
+ * Tests de perfil de usuario.
+ *
+ * Verifica que los usuarios no autenticados sean redirigidos y que
+ * los usuarios autenticados puedan ver y actualizar su perfil.
+ */
+
 namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/** Pruebas del perfil de usuario */
 class PerfilTest extends TestCase
 {
     use RefreshDatabase;

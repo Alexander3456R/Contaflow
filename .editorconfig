@@ -1,3 +1,4 @@
+# .editorconfig — Configuración de estilo de código para editores.
 root = true
 
 [*]

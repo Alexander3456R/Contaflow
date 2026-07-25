@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Controlador de autenticación (login/logout).
+ *
+ * Gestiona el inicio y cierre de sesión de usuarios, con validación
+ * de credenciales y regeneración de sesión.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;

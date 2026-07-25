@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Seeder de registros de auditoría.
+ *
+ * Crea registros de auditoría de ejemplo para cada usuario, incluyendo
+ * acciones de creación, edición, eliminación y exportación de reportes.
+ */
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
@@ -8,6 +15,7 @@ use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
+/** Siembra registros de auditoría de ejemplo */
 class AuditLogSeeder extends Seeder
 {
     public function run(): void

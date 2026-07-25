@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Middleware de seguridad HTTP.
+ *
+ * Agrega cabeceras de seguridad a todas las respuestas: CSP con nonce
+ * para scripts, HSTS, X-Frame-Options, X-Content-Type-Options,
+ * Referrer-Policy, Permissions-Policy y X-Permitted-Cross-Domain-Policies.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Middleware;
@@ -9,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\Response;
 
+/** Middleware que inyecta cabeceras de seguridad HTTP */
 final class SecurityHeaders
 {
     private const array HEADERS = [
@@ -19,6 +28,10 @@ final class SecurityHeaders
         'X-Permitted-Cross-Domain-Policies' => 'none',
     ];
 
+    /**
+     * Aplica cabeceras de seguridad a la respuesta.
+     * Genera un nonce CSP y lo comparte con las vistas para scripts inline.
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $nonce = base64_encode(random_bytes(16));

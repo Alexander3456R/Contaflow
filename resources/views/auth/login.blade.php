@@ -1,3 +1,4 @@
+<!-- Vista: Login — Formulario de inicio de sesión con email, contraseña y opción "recordarme". -->
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>

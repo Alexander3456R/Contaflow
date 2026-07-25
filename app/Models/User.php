@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Modelo: Usuario.
+ *
+ * Representa un usuario del sistema con autenticación, notificaciones
+ * y relaciones con transacciones y respuestas de seguridad.
+ */
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -20,11 +27,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    /** Define los casts de los atributos */
     protected function casts(): array
     {
         return [

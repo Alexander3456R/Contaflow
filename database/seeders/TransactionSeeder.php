@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Seeder de transacciones.
+ *
+ * Genera ~80 transacciones por usuario desde enero 2024 hasta la
+ * fecha actual, con tipos aleatorios (crédito/débito), montos
+ * variables y categorías predefinidas.
+ */
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
@@ -8,6 +16,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
+/** Siembra transacciones financieras de ejemplo para cada usuario */
 class TransactionSeeder extends Seeder
 {
     private const CATEGORIES = [
@@ -22,7 +31,6 @@ class TransactionSeeder extends Seeder
         foreach ($users as $user) {
             $balance = 0;
 
-            // Genera ~80 transacciones por usuario desde enero 2024 hasta la fecha actual
             $start = now()->setDate(2024, 1, 1);
             $end = now();
             $daysRange = (int) $start->diffInDays($end);

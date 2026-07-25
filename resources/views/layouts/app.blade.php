@@ -1,3 +1,4 @@
+<!-- Layout principal de la aplicación. Incluye navegación, sidebar, header, notificaciones y footer. -->
 <!DOCTYPE html>
 <html lang="es">
 <head>

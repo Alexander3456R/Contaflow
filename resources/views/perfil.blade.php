@@ -1,3 +1,4 @@
+<!-- Vista: Perfil — Formulario para actualizar datos personales, cambiar contraseña y gestionar preguntas de seguridad. -->
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Mi Perfil')

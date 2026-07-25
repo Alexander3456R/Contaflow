@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Controlador del panel principal.
+ *
+ * Renderiza el dashboard con el resumen financiero del usuario:
+ * saldo actual, ingresos/gastos del mes (y meses anteriores),
+ * movimientos recientes y datos para gráficos.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers;

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Fábrica: TransactionFactory.
+ *
+ * Genera datos de prueba para el modelo Transaction con tipo
+ * aleatorio, monto, saldo, fecha, categoría y referencia.
+ */
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -8,6 +15,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/** Genera transacciones de prueba */
 class TransactionFactory extends Factory
 {
     protected $model = Transaction::class;

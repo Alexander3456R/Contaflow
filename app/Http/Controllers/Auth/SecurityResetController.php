@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Controlador de restablecimiento de contraseña.
+ *
+ * Implementa un flujo de recuperación de contraseña basado en
+ * preguntas de seguridad: verificación de email, validación de
+ * respuestas y actualización de contraseña.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;

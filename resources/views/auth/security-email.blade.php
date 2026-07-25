@@ -1,3 +1,4 @@
+<!-- Vista: Security Email — Formulario para ingresar el correo electrónico y verificar que tiene preguntas de seguridad configuradas. -->
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>

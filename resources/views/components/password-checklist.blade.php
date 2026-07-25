@@ -1,3 +1,4 @@
+<!-- Componente: Password Checklist — Lista de verificación de requisitos de contraseña con validación en tiempo real. -->
 @props([
     'passwordId' => 'password',
     'confirmId' => 'password_confirmation',

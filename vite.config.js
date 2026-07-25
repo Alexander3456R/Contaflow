@@ -1,3 +1,5 @@
+// Archivo: vite.config.js — Configuración de Vite para Laravel.
+// Define los plugins de Laravel, Tailwind CSS y la fuente Instrument Sans.
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Migración: Creación de tabla user_security_answers.
+ *
+ * Crea la tabla que almacena las respuestas cifradas de los usuarios
+ * a las preguntas de seguridad. Relaciona users con security_questions
+ * con una restricción unique por par usuario-pregunta.
+ */
+
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,6 +16,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /** Ejecuta la migración */
     public function up(): void
     {
         Schema::create('user_security_answers', function (Blueprint $table) {
@@ -21,6 +30,7 @@ return new class extends Migration
         });
     }
 
+    /** Revierte la migración */
     public function down(): void
     {
         Schema::dropIfExists('user_security_answers');

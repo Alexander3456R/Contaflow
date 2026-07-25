@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Tests de autenticación.
+ *
+ * Verifica el funcionamiento de login, registro, cierre de sesión
+ * y flujo de recuperación de contraseña.
+ */
+
 namespace Tests\Feature;
 
 use App\Models\SecurityQuestion;
@@ -7,6 +14,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/** Pruebas de autenticación de usuarios */
 class AuthTest extends TestCase
 {
     use RefreshDatabase;

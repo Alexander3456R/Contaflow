@@ -1,3 +1,4 @@
+<!-- Vista: Dashboard — Panel principal con resumen financiero, saldo actual, ingresos/gastos del mes y movimientos recientes. -->
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Dashboard')

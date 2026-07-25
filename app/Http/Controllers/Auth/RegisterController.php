@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Controlador de registro de usuarios.
+ *
+ * Gestiona el registro de nuevos usuarios con validación de datos,
+ * creación de preguntas de seguridad e inicio de sesión automático.
+ */
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
@@ -54,23 +61,13 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        UserSecurityAnswer::create([
-            'user_id' => $user->id,
-            'security_question_id' => $request->question_1,
-            'answer' => Hash::make($request->answer_1),
-        ]);
-
-        UserSecurityAnswer::create([
-            'user_id' => $user->id,
-            'security_question_id' => $request->question_2,
-            'answer' => Hash::make($request->answer_2),
-        ]);
-
-        UserSecurityAnswer::create([
-            'user_id' => $user->id,
-            'security_question_id' => $request->question_3,
-            'answer' => Hash::make($request->answer_3),
-        ]);
+        foreach (range(1, 3) as $i) {
+            UserSecurityAnswer::create([
+                'user_id' => $user->id,
+                'security_question_id' => $request->{"question_$i"},
+                'answer' => Hash::make($request->{"answer_$i"}),
+            ]);
+        }
 
         event(new Registered($user));
 

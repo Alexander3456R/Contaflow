@@ -1,17 +1,24 @@
 #!/usr/bin/env php
 <?php
 
+/**
+ * Punto de entrada de Artisan CLI.
+ *
+ * Inicializa Laravel desde la línea de comandos para ejecutar
+ * comandos como migrate, queue:listen, test, etc.
+ */
+
 use Illuminate\Foundation\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
 
-// Register the Composer autoloader...
-require __DIR__.'/vendor/autoload.php';
+// Registrar el autoloader de Composer
+require __DIR__ . '/vendor/autoload.php';
 
-// Bootstrap Laravel and handle the command...
+// Inicializar Laravel y ejecutar el comando
 /** @var Application $app */
-$app = require_once __DIR__.'/bootstrap/app.php';
+$app = require_once __DIR__ . '/bootstrap/app.php';
 
 $status = $app->handleCommand(new ArgvInput);
 

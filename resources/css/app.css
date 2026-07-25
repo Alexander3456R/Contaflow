@@ -1,3 +1,4 @@
+/* Archivo: app.css — Hoja de estilos principal. Importa Tailwind CSS y define la fuente del sistema. */
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

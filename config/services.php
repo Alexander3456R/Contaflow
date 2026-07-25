@@ -1,32 +1,51 @@
 <?php
 
+/**
+ * Configuración de servicios de terceros.
+ *
+ * Almacena las credenciales para servicios externos como Postmark,
+ * Resend, AWS SES y Slack.
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Third Party Services
+    | Postmark
     |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
     */
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Resend
+    |--------------------------------------------------------------------------
+    */
+
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AWS SES
+    |--------------------------------------------------------------------------
+    */
 
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Slack
+    |--------------------------------------------------------------------------
+    */
 
     'slack' => [
         'notifications' => [

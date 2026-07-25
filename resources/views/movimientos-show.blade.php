@@ -1,3 +1,4 @@
+<!-- Vista: Detalle de movimiento — Muestra la información completa de una transacción específica. -->
 @extends('layouts.app')
 
 @section('title', 'ContaFlow - Movimiento #' . $movimiento->id)

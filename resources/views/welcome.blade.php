@@ -1,3 +1,4 @@
+<!-- Vista: Welcome — Página de bienvenida que redirige automáticamente al login. -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
